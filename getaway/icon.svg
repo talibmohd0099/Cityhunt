@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0e16"/>
+      <stop offset="1" stop-color="#1a1f2c"/>
+    </linearGradient>
+    <radialGradient id="red" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ff3a2e" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#ff3a2e" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blue" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#3a6bff" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#3a6bff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" rx="44" fill="url(#sky)"/>
+  <!-- the road running away to the horizon -->
+  <polygon points="104,92 152,92 244,256 12,256" fill="#23262d"/>
+  <polygon points="126,98 130,98 133,122 123,122" fill="#d8d2c0"/>
+  <polygon points="122,140 134,140 138,176 118,176" fill="#d8d2c0"/>
+  <!-- police lights behind -->
+  <circle cx="44" cy="230" r="54" fill="url(#red)"/>
+  <circle cx="212" cy="230" r="54" fill="url(#blue)"/>
+  <!-- the getaway car from behind -->
+  <path d="M84 206 q0-26 16-36 l10-18 q4-6 12-6 h12 q8 0 12 6 l10 18 q16 10 16 36 v14 h-88z" fill="#c8141c"/>
+  <path d="M110 166 l7-12 q2-3 6-3 h10 q4 0 6 3 l7 12z" fill="#0d1016"/>
+  <rect x="88" y="196" width="22" height="7" rx="3" fill="#ff5a4a"/>
+  <rect x="146" y="196" width="22" height="7" rx="3" fill="#ff5a4a"/>
+  <rect x="84" y="218" width="18" height="12" rx="3" fill="#0b0b0c"/>
+  <rect x="154" y="218" width="18" height="12" rx="3" fill="#0b0b0c"/>
+</svg>

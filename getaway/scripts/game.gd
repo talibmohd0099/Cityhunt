@@ -130,6 +130,7 @@ func _crash(c) -> void:
 	state = CRASH
 	crash_t = 0.0
 	hit_car = c
+	c.slide = _closing(c.lane) * 0.25
 	spin = (1.0 if c.node.position.x < px else -1.0) * rng.randf_range(2.5, 4.0)
 	shake = 1.0
 	audio.play("boom_1", 0.7)
@@ -254,7 +255,7 @@ func _traffic_pool() -> void:
 		var spec: Dictionary = CarModels.SPEC[k[0]]
 		var sc: float = 0.95 if k[0] == "gls" else 1.0
 		traffic.append({node = node, paints = paints, vm = k[0], oncoming = k[1], taxi = k[2], lane = 0,
-			len = spec.length * sc, wid = spec.width * sc, active = false, gap = 99.0})
+			len = spec.length * sc, wid = spec.width * sc, active = false, gap = 99.0, slide = 0.0})
 
 ## Closing speed of a car in this lane (how fast it comes towards the player).
 func _closing(lane: int) -> float:
@@ -272,9 +273,9 @@ func _try_spawn(z: float) -> void:
 	for c in traffic:
 		if c.active and c.node.position.z < 0.0:
 			var e: float = -c.node.position.z / max(_closing(c.lane), 1.0)
-			if abs(e - eta) < 1.0:
+			if abs(e - eta) < 1.2:
 				busy[c.lane] = true
-	var allowed := 3 if t > 25.0 else 2
+	var allowed := 3 if t > 40.0 else 2   # later on only one lane may be left open
 	if busy.size() > allowed:
 		return
 	var pick := []
@@ -304,10 +305,13 @@ func _move_traffic(dt: float) -> void:
 			continue
 		var n: Node3D = c.node
 		if c == hit_car:
-			# knocked aside by the crash
-			n.position.z += (speed - LANE_SPEED[c.lane] * 0.3) * dt
+			# knocked back by the crash, sliding to a stop
+			c.slide = move_toward(c.slide, 0.0, 30.0 * dt)
+			n.position.z -= c.slide * dt
 			n.rotation.y += -spin * 0.6 * dt
 			continue
+		if state == CRASH or state == OVER:
+			continue   # everyone else stops for the crash
 		n.position.z += _closing(c.lane) * dt
 		if n.position.z > 18.0:
 			_deactivate(c)
@@ -320,6 +324,9 @@ func _move_traffic(dt: float) -> void:
 		if dz < reach - 0.25:
 			if gap < -0.12:
 				if state == PLAY:
+					if gap < -0.5:
+						# head-on: put it back to where the bumpers touch (it may have moved a metre into the car this frame)
+						n.position.z = -(reach - 0.3) if n.position.z < 0.0 else reach - 0.3
 					_crash(c)
 					return
 				else:

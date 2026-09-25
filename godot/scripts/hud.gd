@@ -1015,7 +1015,7 @@ func _build_settings() -> void:
 	var seg := HBoxContainer.new()
 	seg.add_theme_constant_override("separation", 0)
 	set_ctrls.gfx = {}
-	for q in ["auto", "low", "high"]:
+	for q in ["auto", "low", "medium", "high"]:
 		var b := Button.new()
 		b.text = q.to_upper()
 		b.toggle_mode = true

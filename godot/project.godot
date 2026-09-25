@@ -70,3 +70,7 @@ refl_on={
 "type": "float",
 "value": 0.0
 }
+game_time={
+"type": "float",
+"value": 0.0
+}

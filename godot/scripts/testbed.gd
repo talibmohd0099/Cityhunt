@@ -17,6 +17,11 @@ func _ready() -> void:
 	else:
 		world = World.new()
 		world.name = "World"
+		if args.has("fog"):
+			var f := String(args.fog).split(",")
+			world.fog_base = Color(float(f[0]), float(f[1]), float(f[2]))
+		if args.has("fogend"):
+			world.fog_end = float(args.fogend)
 		add_child(world)
 	cam = Camera3D.new()
 	cam.fov = 62.0

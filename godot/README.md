@@ -18,6 +18,9 @@ web-version app.
 3. Press F5 to play. Mouse drag looks around, WASD walks, Shift runs, Space sprints,
    C crouches, F toggles the light, E interacts.
 
+Graphics can be set under Settings: Auto picks a level from how fast the phone runs; Low, Medium
+and High fix it (render resolution, reflections, glow, flashlight shadow, how far cars are drawn).
+
 ## What is where
 
 - `scripts/game.gd`: the game rules, clues, escape, director and end screens
@@ -25,6 +28,11 @@ web-version app.
 - `scripts/hud.gd`: HUD, touch controls, start / pause / end / settings screens
 - `scripts/world.gd`, `col.gd`: the city, lights, rain and collision
 - `assets/baked/`: city, characters and textures exported from the browser version by `tools/bake`
+- `assets/pbr/`: close-up surface detail (asphalt, paving slabs, brick relief, rain drops), made by
+  `tools/textures/make_textures.py`
+- `assets/vehicles/*_far.glb`: light stand-ins for the car models seen from far away, made by
+  `tools/vehicles/make_far_lod.py`
+- `shaders/`: wet streets, building walls, car paint, light halos and police light bars
 - `tests/autoplay.gd`: plays whole games by itself and checks each step (runs on every build)
 
 ## Run the automatic test

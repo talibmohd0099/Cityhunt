@@ -430,10 +430,10 @@ func apply_gfx() -> void:
 	var lv := gfx_level()
 	var vp := get_viewport()
 	var touch := DisplayServer.is_touchscreen_available()
-	# phones render the 3D view a little below screen resolution and sharpen it back up (FSR)
-	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR if lv == 0 else Viewport.SCALING_3D_MODE_FSR
+	# phones render the 3D view a little below screen resolution (the Mobile renderer can only
+	# stretch it back up; FSR sharpening needs the Forward+ renderer)
+	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
 	vp.scaling_3d_scale = [0.6, 0.75, 0.9][lv] if touch else [0.7, 1.0, 1.0][lv]
-	vp.fsr_sharpness = 0.4
 	vp.msaa_3d = Viewport.MSAA_DISABLED if lv == 0 else Viewport.MSAA_2X
 	world.set_quality(lv)
 	pl.light.shadow_enabled = lv > 0

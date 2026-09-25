@@ -1,0 +1,747 @@
+{
+  "rain_hiss_loop": {
+    "files": [
+      "rain_hiss_loop.wav"
+    ],
+    "loop": true,
+    "gain": [
+      1.59088
+    ],
+    "source": "initAudio: AU.noise -> highpass 600 -> AU.rainLP (4200)",
+    "notes": "Ambient, non-positional. JS gain = (under?0.03 : inside?0.05 : 0.085) * rv, rv = (1-0.8*G.quiet) * SET.rain/100 * WX.i^0.8, smoothed (setTargetAtTime tau 0.6 s). JS rainLP is dynamic: under 350 Hz, inside 1000 Hz, outdoors 3000+1600*WX.i (tau 0.3 s); the file has the initial 4200 Hz baked in, so add a bus low-pass only when the target is below ~4200 Hz. JS loops a 2 s noise buffer; this is 5 s of non-repeating noise. File = loop_end frames + 1 guard frame (copy of frame 0); smpl chunk loops [0, loop_end).",
+    "durations": [
+      5.0
+    ],
+    "params": [
+      {
+        "seconds": 5.0
+      }
+    ],
+    "loop_end": [
+      110250
+    ]
+  },
+  "rain_body_loop": {
+    "files": [
+      "rain_body_loop.wav"
+    ],
+    "loop": true,
+    "gain": [
+      0.48458
+    ],
+    "source": "initAudio: AU.brown -> bandpass 800 Q0.5 -> AU.rainLP2 (2200)",
+    "notes": "Ambient, non-positional. JS gain = (under?0.06:0.13) * rv (same rv as rain_hiss, tau 0.6 s). rainLP2 is dynamic: under 250 Hz, inside 650 Hz, outdoors 2200 Hz (baked). File = loop_end frames + 1 guard frame (copy of frame 0); smpl chunk loops [0, loop_end).",
+    "durations": [
+      5.5
+    ],
+    "params": [
+      {
+        "seconds": 5.5
+      }
+    ],
+    "loop_end": [
+      121275
+    ]
+  },
+  "wind_loop": {
+    "files": [
+      "wind_loop.wav"
+    ],
+    "loop": true,
+    "gain": [
+      0.84932
+    ],
+    "source": "initAudio: AU.brown -> AU.windLP (lowpass 380)",
+    "notes": "Ambient, non-positional. JS gain = (under?0.03 : 0.08+0.06*max(0,sin(G.time*0.13))) * (1-0.8*G.quiet), tau 1.0 s. The 380 Hz lowpass is static (baked). File = loop_end frames + 1 guard frame (copy of frame 0); smpl chunk loops [0, loop_end).",
+    "durations": [
+      6.0
+    ],
+    "params": [
+      {
+        "seconds": 6.0
+      }
+    ],
+    "loop_end": [
+      132300
+    ]
+  },
+  "drone_loop": {
+    "files": [
+      "drone_loop.wav"
+    ],
+    "loop": true,
+    "gain": [
+      1.36493
+    ],
+    "source": "initAudio: tension drone (sines 41/41.6/61.8 + AU.brown -> bandpass 220 Q2 x0.25)",
+    "notes": "Non-positional. JS gain AU.droneG = ten*0.16 (tau 0.8 s), ten = max(CHASE?1:0, clamp(1-dPM/55,0,1)) in explore/escape, else 0 (tau 0.5 s on loss, 0.3 s on menu). 5 s = whole cycles of every sine. File = loop_end frames + 1 guard frame (copy of frame 0); smpl chunk loops [0, loop_end).",
+    "durations": [
+      5.0
+    ],
+    "params": [
+      {
+        "seconds": 5.0
+      }
+    ],
+    "loop_end": [
+      110250
+    ]
+  },
+  "alarm_loop": {
+    "files": [
+      "alarm_loop.wav"
+    ],
+    "loop": true,
+    "gain": [
+      1.16731
+    ],
+    "source": "sAlarm: sawtooth 1050 Hz, 2.1 Hz LFO x380 Hz on frequency, lowpass 3000",
+    "notes": "Car alarm, positional, bypasses outNode. JS gain = posParams(car, ref 26).vol * 0.22 * min(1, alarmT/0.6) (setTargetAtTime tau 0.08); its lowpass follows min(3000, pp.lp) (tau 0.1): 3000 is baked, add a low-pass only when pp.lp < 3000; pan follows pp.pan. Sounds for alarmT = 14 s, then gain -> 0 (tau 0.05); 60 s cooldown per car. Loop = 10 LFO periods (4.7619 s). File = loop_end frames + 1 guard frame (copy of frame 0); smpl chunk loops [0, loop_end).",
+    "durations": [
+      4.7619
+    ],
+    "params": [
+      {
+        "seconds": 4.7619,
+        "lfo_periods": 10
+      }
+    ],
+    "loop_end": [
+      105000
+    ]
+  },
+  "siren": {
+    "files": [
+      "siren.wav"
+    ],
+    "loop": false,
+    "gain": [
+      2.28523
+    ],
+    "source": "sSiren",
+    "notes": "Far police siren, one-shot 10 s with its 0.33 s / 0.45 feedback echo baked. Every rand(35,70) s; fixed vol 0.035, pan rand(-0.9,0.9), lowpass 1600 baked.",
+    "durations": [
+      10.9529
+    ],
+    "params": [
+      {}
+    ],
+    "vol": 0.035
+  },
+  "thud": {
+    "files": [
+      "thud_1.wav",
+      "thud_2.wav",
+      "thud_3.wav"
+    ],
+    "loop": false,
+    "gain": [
+      1.21227,
+      1.39959,
+      1.16338
+    ],
+    "source": "sThud",
+    "notes": "Monster footstep: sThud(v, pp.pan, pp.lp), pp = posParams(foot, ref CHASE?34:26), v = pp.vol*(fore?1:0.75)*(CHASE?1.4:1)*(menu?0.6:1), skipped if v < 0.004; lp = distance/occlusion (not baked). Phantom steps: 4 thuds 0.62 s apart, vol 0.5, lp 420, pan jitter +-0.1, 22 m behind the camera. Variants differ only in their noise segments. posParams(x,y,z,ref) used by all positional sounds: d = horizontal distance to the camera, vol = 1/(1+(d/ref)^2), pan = -sin(rel)*0.85 (rel = angle from camera yaw), lp = 16000*exp(-d/45)+300, x0.6 if behind; lp = min(lp,260) if exactly one of player/source is underground (y < -2), else min(lp,700) without line of sight.",
+    "durations": [
+      0.4946,
+      0.4938,
+      0.5086
+    ],
+    "params": [
+      {
+        "noise_offsets": [
+          0.998,
+          0.082
+        ]
+      },
+      {
+        "noise_offsets": [
+          0.045,
+          0.612
+        ]
+      },
+      {
+        "noise_offsets": [
+          1.095,
+          0.337
+        ]
+      }
+    ]
+  },
+  "growl": {
+    "files": [
+      "growl_1.wav",
+      "growl_2.wav",
+      "growl_3.wav"
+    ],
+    "loop": false,
+    "gain": [
+      1.09086,
+      1.17241,
+      1.18696
+    ],
+    "source": "sGrowl roar=false",
+    "notes": "From vocal(v): pp = posParams(monster, ref 30) (posParams: see thud), vol = pp.vol*v*0.8, pan/lp from pp, dur = rand(1.2,2.0) (files at 1.2/1.6/2.0 s). v = 0.8 for idle vocalising (every rand(9,18) s within 70 m), v = 0.5 on 50 % of switches to INVESTIGATE. Half of vocal() calls play clicks instead.",
+    "durations": [
+      1.1744,
+      1.559,
+      1.9393
+    ],
+    "params": [
+      {
+        "dur": 1.2,
+        "roar": false,
+        "noise_offset": 0.162,
+        "noise_s": 1.3
+      },
+      {
+        "dur": 1.6,
+        "roar": false,
+        "noise_offset": 1.482,
+        "noise_s": 0.518
+      },
+      {
+        "dur": 2.0,
+        "roar": false,
+        "noise_offset": 1.434,
+        "noise_s": 0.566
+      }
+    ]
+  },
+  "roar": {
+    "files": [
+      "roar_1.wav",
+      "roar_2.wav",
+      "roar_3.wav"
+    ],
+    "loop": false,
+    "gain": [
+      1.05499,
+      1.03427,
+      1.12709
+    ],
+    "source": "sGrowl roar=true",
+    "notes": "roar_1 (1.4 s): lose(), vol 0.9, lp 4000, pan pp.pan (ref 30). roar_2 (1.8 s): startChase, vol max(0.35, pp.vol*1.3) (ref 40), lp max(pp.lp,1500), 14 s cooldown, always with stinger. roar_3 (2.4 s): beginEscape, vol max(0.25, pp.vol) (ref 60), lp pp.lp.",
+    "durations": [
+      1.3518,
+      1.7737,
+      2.3604
+    ],
+    "params": [
+      {
+        "dur": 1.4,
+        "roar": true,
+        "noise_offset": 0.116,
+        "noise_s": 1.5
+      },
+      {
+        "dur": 1.8,
+        "roar": true,
+        "noise_offset": 0.42,
+        "noise_s": 1.58
+      },
+      {
+        "dur": 2.4,
+        "roar": true,
+        "noise_offset": 0.72,
+        "noise_s": 1.28
+      }
+    ]
+  },
+  "clicks": {
+    "files": [
+      "clicks_1.wav",
+      "clicks_2.wav",
+      "clicks_3.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.22207,
+      0.21792,
+      0.2222
+    ],
+    "source": "sClicks",
+    "notes": "Monster clicks from vocal(v): vol = pp.vol*v (ref 30), pan/lp from pp (see growl). Each variant has its own random click count/timing/pitch.",
+    "durations": [
+      0.783,
+      0.6717,
+      0.4978
+    ],
+    "params": [
+      {
+        "count": 13
+      },
+      {
+        "count": 11
+      },
+      {
+        "count": 8
+      }
+    ]
+  },
+  "heart": {
+    "files": [
+      "heart.wav"
+    ],
+    "loop": false,
+    "gain": [
+      1.16252
+    ],
+    "source": "sHeart",
+    "notes": "Heartbeat: sHeart(0.2+0.4*close), pan 0, lowpass 300 baked; retriggered every lerp(1.1,0.4,close) s while close > 0.05 in explore/escape; close = CHASE?1 : clamp(1-(dPM-6)/24,0,1).",
+    "durations": [
+      0.3125
+    ],
+    "params": [
+      {}
+    ]
+  },
+  "step_wet": {
+    "files": [
+      "step_wet_1.wav",
+      "step_wet_2.wav",
+      "step_wet_3.wav",
+      "step_wet_4.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.88355,
+      1.08117,
+      0.92666,
+      0.72637
+    ],
+    "source": "sStep wet=true",
+    "notes": "Player footstep outdoors: sStep(vol, true), vol sprint 0.16 / run 0.1 / walk 0.05 / crouch 0.025; pan rand(-0.1,0.1); lowpass 5200 baked. JS picks playbackRate rand(0.8,1.2) per step; the 4 files cover that range (params.rate).",
+    "durations": [
+      0.1214,
+      0.1182,
+      0.1197,
+      0.122
+    ],
+    "params": [
+      {
+        "rate": 0.836
+      },
+      {
+        "rate": 0.934
+      },
+      {
+        "rate": 1.067
+      },
+      {
+        "rate": 1.156
+      }
+    ]
+  },
+  "step_dry": {
+    "files": [
+      "step_dry_1.wav",
+      "step_dry_2.wav",
+      "step_dry_3.wav",
+      "step_dry_4.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.5655,
+      0.5451,
+      0.44831,
+      0.39714
+    ],
+    "source": "sStep wet=false",
+    "notes": "Player footstep inside buildings or underground (wet = !inInterior && y > -1): same volumes/pan as step_wet; lowpass 2600 baked.",
+    "durations": [
+      0.1207,
+      0.1208,
+      0.1221,
+      0.122
+    ],
+    "params": [
+      {
+        "rate": 0.871
+      },
+      {
+        "rate": 0.93
+      },
+      {
+        "rate": 1.043
+      },
+      {
+        "rate": 1.166
+      }
+    ]
+  },
+  "chime": {
+    "files": [
+      "chime.wav"
+    ],
+    "loop": false,
+    "gain": [
+      1.92485
+    ],
+    "source": "sChime",
+    "notes": "Clue found / win. Fixed vol 0.13, pan 0, lowpass 6000 baked.",
+    "durations": [
+      2.0014
+    ],
+    "params": [
+      {}
+    ],
+    "vol": 0.13
+  },
+  "ui_click": {
+    "files": [
+      "ui_click.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.47363
+    ],
+    "source": "sClick",
+    "notes": "Flashlight toggle, dialog choice. Fixed vol 0.18, pan 0.2, lowpass 8000 baked.",
+    "durations": [
+      0.042
+    ],
+    "params": [
+      {}
+    ],
+    "vol": 0.18
+  },
+  "sob": {
+    "files": [
+      "sob_1.wav",
+      "sob_2.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.36631,
+      0.34126
+    ],
+    "source": "sSob",
+    "notes": "Child crying, positional sSob(vol, pp.pan, pp.lp), skipped if vol < 0.003. Call sites: hiding pp.vol*0.9 (ref 9); scared 0.7 (ref 8); 'wait' 0.6 (ref 10); following 0.6 (ref 8); cry clue max(0.05, pp.vol*0.8) (ref 12) with lp = min(pp.lp,1500); 'help' pp.vol (ref 6). Variants differ only in breath noise.",
+    "durations": [
+      1.5016,
+      1.5311
+    ],
+    "params": [
+      {
+        "noise_offsets": [
+          0.645,
+          0.653,
+          0.928,
+          1.471
+        ]
+      },
+      {
+        "noise_offsets": [
+          1.322,
+          1.461,
+          0.012,
+          0.778
+        ]
+      }
+    ]
+  },
+  "thunder": {
+    "files": [
+      "thunder_1.wav",
+      "thunder_2.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.78918,
+      0.71907
+    ],
+    "source": "sThunder",
+    "notes": "sThunder(vol), vol = 0.35+0.3*s, s = rand(0.5,1)*(0.5+0.5*WX.i), rand(0.8,2.4) s after a lightning flash; pan rand(-0.5,0.5); lowpass 900 baked. JS plays the 2 s AU.brown buffer from a random 0-1.5 s offset without looping, so the rumble stops after 0.5-2 s even though the envelope runs to 5.5 s. The files reproduce that (params.rumble_s). Set FAITHFUL_BUFFER_TRUNCATION=False for the full 5.5 s roll.",
+    "durations": [
+      1.5059,
+      0.6986
+    ],
+    "params": [
+      {
+        "noise_offset": 0.498,
+        "rumble_s": 1.502
+      },
+      {
+        "noise_offset": 1.306,
+        "rumble_s": 0.694
+      }
+    ]
+  },
+  "stinger": {
+    "files": [
+      "stinger.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.91887
+    ],
+    "source": "sStinger",
+    "notes": "Chase stinger (startChase, with roar_2). Fixed vol 0.3, pan 0, lowpass 3000 baked.",
+    "durations": [
+      1.7025
+    ],
+    "params": [
+      {
+        "noise_offset": 1.181
+      }
+    ],
+    "vol": 0.3
+  },
+  "clang": {
+    "files": [
+      "clang_1.wav",
+      "clang_2.wav",
+      "clang_3.wav"
+    ],
+    "loop": false,
+    "gain": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "source": "new",
+    "notes": "Metal trash can knocked. Suggested: positional, vol = 1/(1+(d/18)^2) scaled by impact speed, pitch_scale 0.95-1.05, distance/occlusion lowpass as posParams.",
+    "durations": [
+      0.618,
+      0.6155,
+      0.6163
+    ],
+    "params": [
+      {
+        "base_hz": 272.5,
+        "partials_hz": [
+          272.5,
+          418.9,
+          668.4,
+          1142.0
+        ],
+        "rebound_s": 0.124
+      },
+      {
+        "base_hz": 298.2,
+        "partials_hz": [
+          298.2,
+          457.9,
+          756.8,
+          1282.8
+        ],
+        "rebound_s": 0.11
+      },
+      {
+        "base_hz": 292.8,
+        "partials_hz": [
+          292.8,
+          470.2,
+          745.8,
+          1270.3
+        ],
+        "rebound_s": 0.104
+      }
+    ]
+  },
+  "plastic": {
+    "files": [
+      "plastic_1.wav",
+      "plastic_2.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.55556,
+      0.55556
+    ],
+    "source": "new",
+    "notes": "Plastic traffic cone knocked over. Suggested ref distance 10, vol scaled by impact speed.",
+    "durations": [
+      0.16,
+      0.16
+    ],
+    "params": [
+      {
+        "body_hz": 196.1,
+        "hollow_hz": 792.7,
+        "tap2_s": 0.062
+      },
+      {
+        "body_hz": 232.2,
+        "hollow_hz": 653.9,
+        "tap2_s": 0.067
+      }
+    ]
+  },
+  "card": {
+    "files": [
+      "card_1.wav",
+      "card_2.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.33333,
+      0.33333
+    ],
+    "source": "new",
+    "notes": "Cardboard box thump (very soft). Suggested ref distance 6.",
+    "durations": [
+      0.2176,
+      0.2174
+    ],
+    "params": [
+      {
+        "flap_s": 0.057
+      },
+      {
+        "flap_s": 0.061
+      }
+    ]
+  },
+  "clink": {
+    "files": [
+      "clink_1.wav",
+      "clink_2.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.44444,
+      0.44444
+    ],
+    "source": "new",
+    "notes": "Glass bottle tapping the ground. Suggested ref distance 8.",
+    "durations": [
+      0.2,
+      0.2
+    ],
+    "params": [
+      {
+        "partials_hz": [
+          3247.7,
+          4431.1,
+          5000.0
+        ],
+        "tap2_s": 0.065
+      },
+      {
+        "partials_hz": [
+          3126.2,
+          4556.6,
+          4987.4
+        ],
+        "tap2_s": 0.084
+      }
+    ]
+  },
+  "shatter": {
+    "files": [
+      "shatter_1.wav",
+      "shatter_2.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.88889,
+      0.88889
+    ],
+    "source": "new",
+    "notes": "Glass bottle smashing. Suggested ref distance 14; loud enough to be a noise event for the monster.",
+    "durations": [
+      0.7144,
+      0.7132
+    ],
+    "params": [
+      {
+        "clinks": 49,
+        "shards": 4
+      },
+      {
+        "clinks": 60,
+        "shards": 5
+      }
+    ]
+  },
+  "boom": {
+    "files": [
+      "boom_1.wav",
+      "boom_2.wav"
+    ],
+    "loop": false,
+    "gain": [
+      1.33333,
+      1.33333
+    ],
+    "source": "new",
+    "notes": "Car explosion. Suggested ref distance 60, add camera shake; follow with ring (if close) and fire_loop at the wreck. Big peak: the master compressor (threshold -14 dB, ratio 4) will squash it, as the JS master bus would.",
+    "durations": [
+      3.9276,
+      3.9434
+    ],
+    "params": [
+      {
+        "sub_hz": 64.2,
+        "crackles": 66
+      },
+      {
+        "sub_hz": 61.6,
+        "crackles": 51
+      }
+    ]
+  },
+  "fire_loop": {
+    "files": [
+      "fire_loop.wav"
+    ],
+    "loop": true,
+    "gain": [
+      0.55556
+    ],
+    "source": "new",
+    "notes": "Burning wreck, positional loop. Suggested ref distance 10; fade in over ~1 s after ignite. File = loop_end frames + 1 guard frame (copy of frame 0); smpl chunk loops [0, loop_end).",
+    "durations": [
+      5.0
+    ],
+    "params": [
+      {
+        "seconds": 5.0,
+        "crackles": 79
+      }
+    ],
+    "loop_end": [
+      110250
+    ]
+  },
+  "ignite": {
+    "files": [
+      "ignite.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.77778
+    ],
+    "source": "new",
+    "notes": "Fuel catching fire (quick rising whoosh). Suggested ref distance 12; start fire_loop ~0.6 s in.",
+    "durations": [
+      0.981
+    ],
+    "params": [
+      {
+        "crackles": 9
+      }
+    ]
+  },
+  "ring": {
+    "files": [
+      "ring.wav"
+    ],
+    "loop": false,
+    "gain": [
+      0.22222
+    ],
+    "source": "new",
+    "notes": "Ear ringing after a nearby blast. Non-positional; vol ~ 1-d/25 (skip beyond 25 m). While it plays, duck other buses and low-pass them to ~1 kHz for ~2 s.",
+    "durations": [
+      3.1896
+    ],
+    "params": [
+      {
+        "hz": 3800
+      }
+    ]
+  }
+}

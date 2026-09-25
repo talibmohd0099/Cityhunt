@@ -1,0 +1,6 @@
+{
+  "name": "lostcity-bake",
+  "private": true,
+  "description": "Exports the city, textures, data and characters from the browser game (index.html) for the Godot version",
+  "dependencies": { "three": "0.128.0" }
+}

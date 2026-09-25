@@ -36,6 +36,8 @@ Pull requests build the APK too. You can download it from the run's **Artifacts*
 | `assets/xbot.json` | Animated humanoid rig (glTF with an embedded buffer) used for the player, the child and the monster |
 | `assets/brick.jpg` | Brick detail texture for the facades |
 | `assets/ripples.jpg` | Normal map for rain ripples in the puddle reflections |
+| `assets/vehicles/gls.glb` | Mercedes-Benz GLS 580 model, used for the parked SUVs |
+| `assets/vehicles/agera.glb` | Koenigsegg Agera model, used for some parked sedans and the red car on the south street |
 
 Three.js r128 and its example loaders and post-processing passes are loaded from cdnjs / jsDelivr. There is no build step.
 
@@ -47,10 +49,10 @@ Three.js r128 and its example loaders and post-processing passes are loaded from
 - **Wet streets:** planar reflections, brick detail, bloom and a color grade.
 - **Adaptive quality:** slow devices automatically turn off the reflections and bloom.
 - **Sound:** all audio is synthesized with WebAudio.
-- **Fallback:** if the character asset fails to load, the game falls back to procedural characters.
+- **Fallback:** if the character asset fails to load, the game falls back to procedural characters. If a car model fails to load, the built-in car shapes are used instead.
 - **Weather:** the rain comes and goes at random, from clear to drizzle, rain and storm. Heavier rain hides more of your footsteps from the monster, and lightning only strikes in heavy rain.
 - **Pause and settings:** the pause button (or Esc/P) pauses the game, which also happens automatically when the app goes to the background. Settings covers volume, rain volume, look speed, graphics (Auto/Low/High) and vibration, and they are saved on the device.
-- **Vehicles:** besides the parked sedans, SUVs, vans and taxis, the streets have two buses, a fire truck, police cars and an ambulance with flashing light bars, two crash scenes, and abandoned cars with their doors left open. You can hide beside the buses, the fire truck and the ambulance.
+- **Vehicles:** besides the parked sedans, SUVs, vans and taxis, the streets have two buses, a fire truck, police cars and an ambulance with flashing light bars, two crash scenes, and abandoned cars with their doors left open. Parked SUVs use a detailed Mercedes-Benz GLS model and some parked sedans use a Koenigsegg Agera model, drawn with GPU instancing so they stay cheap. You can hide beside the buses, the fire truck and the ambulance.
 - **Car alarms:** some parked cars have a blinking red light on the dashboard. Run or sprint into one and its alarm goes off. The monster comes to investigate the noise, which you can use to lure it away.
 - **Records:** your rescues, attempts and best rescue time are saved on the device.
 
@@ -61,4 +63,5 @@ All rights reserved. See [LICENSE](LICENSE). Third-party parts keep their own li
 ## Credits
 
 - The Xbot rig and the brick/water textures come from the [three.js examples](https://github.com/mrdoob/three.js/tree/dev/examples) (MIT).
+- The Mercedes-Benz GLS 580 and Koenigsegg Agera models were supplied by the project owner (source files `uploads_files_2787791` and `uploads_files_2792345`), converted and simplified for the game. Car brand names and designs belong to their owners.
 - Fonts: Big Shoulders Display and Barlow (Google Fonts, OFL).

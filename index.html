@@ -756,6 +756,8 @@ function trafficLight(x,z){ bProps.box(x-0.08,0.14,z-0.08,x+0.08,4.2,z+0.08,[0.0
 const CARS=[]; const CAR_STREAKS=[]; const ALARMS=[];
 /* ---- detailed car models: extruded body profiles, glass, wheels, lights; merged into two meshes ---- */
 const bCarP=new GB(), bCarT=new GB();
+// stand-in geometry for cars that get a real 3D model once it loads (shown if the model fails)
+const bFbP=new GB(), bFbT=new GB(), bFbG=new GB(); const VSLOTS=[];
 GB.prototype.addGeo=function(g,m,col){ g=g.index?g.toNonIndexed():g; const P=g.attributes.position, N=g.attributes.normal; const v=new THREE.Vector3(), n=new THREE.Vector3(); const nm=new THREE.Matrix3().getNormalMatrix(m);
   for(let i=0;i<P.count;i++){ v.fromBufferAttribute(P,i).applyMatrix4(m); n.fromBufferAttribute(N,i).applyMatrix3(nm).normalize(); this.P.push(v.x,v.y,v.z); this.N.push(n.x,n.y,n.z); this.U.push(0,0); this.C.push(col[0],col[1],col[2]); } };
 function carShape(pts,arches,ar){ const sh=new THREE.Shape(); sh.moveTo(pts[0][0],pts[0][1]);
@@ -823,17 +825,17 @@ const _cw=new V3();
 function carWP(m,lx,ly,lz){ return _cw.set(lx,ly,lz).applyMatrix4(m); }
 function placeCar(T,x,z,ry,col,lit,o={}){
   const m=new THREE.Matrix4().makeRotationY(ry).setPosition(x,0,z);
-  const dk=[0.012,0.012,0.014];
+  const dk=[0.012,0.012,0.014]; const bP=o.fb?bFbP:bCarP, bT=o.fb?bFbT:bCarT, bG=o.fb?bFbG:bGlow;
   for(const p of T.parts){
     switch(p.kind){
-      case 'paint': bCarP.addGeo(p.g,m,col); break;
-      case 'glass': bCarP.addGeo(p.g,m,[0.012,0.016,0.02]); break;
-      case 'rim': bCarP.addGeo(p.g,m,[0.42,0.42,0.44]); break;
-      case 'trim': bCarT.addGeo(p.g,m,dk); break;
-      case 'tire': bCarT.addGeo(p.g,m,[0.02,0.02,0.02]); break;
-      case 'head': bGlow.addGeo(p.g,m,lit?[1.0,0.95,0.82]:[0.16,0.17,0.17]); break;
-      case 'tail': bGlow.addGeo(p.g,m,lit?[1.0,0.06,0.03]:[0.16,0.02,0.02]); break;
-      case 'sign': bGlow.addGeo(p.g,m,[0.9,0.7,0.25]); break;
+      case 'paint': bP.addGeo(p.g,m,col); break;
+      case 'glass': bP.addGeo(p.g,m,[0.012,0.016,0.02]); break;
+      case 'rim': bP.addGeo(p.g,m,[0.42,0.42,0.44]); break;
+      case 'trim': bT.addGeo(p.g,m,dk); break;
+      case 'tire': bT.addGeo(p.g,m,[0.02,0.02,0.02]); break;
+      case 'head': bG.addGeo(p.g,m,lit?[1.0,0.95,0.82]:[0.16,0.17,0.17]); break;
+      case 'tail': bG.addGeo(p.g,m,lit?[1.0,0.06,0.03]:[0.16,0.02,0.02]); break;
+      case 'sign': bG.addGeo(p.g,m,[0.9,0.7,0.25]); break;
       case 'barR': bGlow.addGeo(p.g,m,o.flash?[1.0,0.08,0.06]:[0.3,0.03,0.03]); break;
       case 'barB': bGlow.addGeo(p.g,m,o.flash?[0.12,0.3,1.0]:[0.03,0.06,0.3]); break;
       case 'stripe': bCarP.addGeo(p.g,m,o.stripeCol||[0.8,0.8,0.78]); break;
@@ -881,7 +883,10 @@ function placeCar(T,x,z,ry,col,lit,o={}){
     const cs=Math.abs(Math.cos(ry)), sn=Math.abs(Math.sin(ry));
     const hx=cs*T.L/2+sn*T.W/2, hz=sn*T.L/2+cs*T.W/2;
     const alarm=o.alarm?{x,z,hx,hz,alarmT:0,cd:0,callT:0,snd:null}:null;
-    placeCar(T,x,z,ry,col,!!o.lit,{door:o.door,flash:o.flash,ph:o.ph,stripeCol:liv&&liv[1],alarm});
+    // real 3D models: every parked SUV becomes the Mercedes GLS, some sedans the Koenigsegg Agera
+    let vm=o.model||null; if(!vm&&!o.type&&!o.door){ if(type==='suv') vm='gls'; else if(type==='sedan'&&srand()<0.15) vm='agera'; }
+    placeCar(T,x,z,ry,col,!!o.lit,{door:o.door,flash:o.flash,ph:o.ph,stripeCol:liv&&liv[1],alarm,fb:!!vm});
+    if(vm) VSLOTS.push({vm,x,z,ry,col});
     addCol(x-hx,x+hx,z-hz,z+hz,0,T.H,{small:T.H<2.5});
     CARS.push({x,z,alongX,type}); if(alarm) ALARMS.push(alarm);
     if(o.hide){ const side=o.hide, d=(alongX?hz:hx)+0.55; HIDES.push(alongX?{x,z:z+side*d}:{x:x+side*d,z}); }
@@ -904,6 +909,7 @@ function placeCar(T,x,z,ry,col,lit,o={}){
   // crash on the east edge road
   car(106.6,58,false,{type:'taxi',dir:1,ang:0.4,reserve:true,door:1}); car(106.2,63.6,false,{type:'van',dir:-1,ang:-0.25,reserve:true,hide:-1}); debris(106.6,60.8,20);
   car(104.2,70,false,{type:'police',dir:1,flash:true,reserve:true,ph:0.3});
+  car(20,49.2,true,{type:'sedan',model:'agera',dir:-1,ang:0.1,lit:true,reserve:true,col:[0.5,0.02,0.02],alarm:true});
   // abandoned cars with doors left open
   [[-58,-86,false,0.3,1],[60,24,false,-0.25,-1],[-20,-57,true,0.2,1],[36,-3.5,true,-0.3,-1],[-70,55,true,0.15,1],[90,-57.5,true,-0.2,-1]].forEach(([x,z,ax,ang,door],k)=>{
     car(x,z,ax,{dir:k%2?1:-1,ang,door,reserve:true,lit:k===2,alarm:k%3===0}); if(k===2){ addHalo(x,0.8,z-2.3,0xffa020,1.4,{kind:'hazard'}); } });
@@ -1028,6 +1034,29 @@ addMesh(bGlow.geo(),matGlow,{recv:false,nocull:true});
 const matCarP=new THREE.MeshPhysicalMaterial({vertexColors:true,roughness:0.3,metalness:0.45,clearcoat:1,clearcoatRoughness:0.06,envMapIntensity:1.4});
 const matCarT=new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.8,metalness:0.1});
 addMesh(bCarP.geo(),matCarP,{cast:true,nocull:true}); addMesh(bCarT.geo(),matCarT,{cast:true,nocull:true});
+const FB_MESH=[[bFbP,matCarP,true],[bFbT,matCarT,true],[bFbG,matGlow,false]].map(([b,mt,c])=>b.P.length?addMesh(b.geo(),mt,{cast:c,recv:c,nocull:true}):null);
+/* real vehicle models (assets/vehicles/*.glb): one InstancedMesh per material role, paint colored per car */
+const VMAT={
+  paint:new THREE.MeshPhysicalMaterial({color:0xffffff,roughness:0.3,metalness:0.45,clearcoat:1,clearcoatRoughness:0.06,envMapIntensity:1.4}),
+  glass:new THREE.MeshPhysicalMaterial({color:0x06090c,roughness:0.04,metalness:0.8,clearcoat:1,envMapIntensity:1.6}),
+  chrome:new THREE.MeshStandardMaterial({color:0xbfc3c8,roughness:0.22,metalness:1,envMapIntensity:1.2}),
+  trim:new THREE.MeshStandardMaterial({color:0x0b0b0c,roughness:0.6,metalness:0.2}),
+  carbon:new THREE.MeshStandardMaterial({color:0x0d0d0f,roughness:0.35,metalness:0.5,envMapIntensity:0.8}),
+  interior:new THREE.MeshStandardMaterial({color:0x0f0f10,roughness:0.9}),
+  tire:new THREE.MeshStandardMaterial({color:0x0a0a0a,roughness:0.95}),
+  wheel:new THREE.MeshStandardMaterial({color:0x1c1c1e,roughness:0.4,metalness:0.6}),
+  lens:new THREE.MeshPhysicalMaterial({color:0x3a3f48,roughness:0.06,metalness:0.6,clearcoat:1}),
+  head:new THREE.MeshStandardMaterial({color:0x8f8f88,roughness:0.2,metalness:0.3}),
+  tail:new THREE.MeshStandardMaterial({color:0x520404,emissive:0x220000,roughness:0.3})};
+const VEH={loaded:0};
+function buildVehicleInstances(src,slots){ const mm=new THREE.Matrix4(), cc=new THREE.Color();
+  src.traverse(n=>{ if(!n.isMesh) return; const mat=VMAT[n.name]||VMAT.trim; const im=new THREE.InstancedMesh(n.geometry,mat,slots.length);
+    slots.forEach((s,i)=>{ im.setMatrixAt(i,mm.makeRotationY(s.ry).setPosition(s.x,0,s.z)); if(n.name==='paint'){ cc.setRGB(s.col[0],s.col[1],s.col[2]); im.setColorAt(i,cc); } });
+    im.castShadow=true; im.receiveShadow=true; im.frustumCulled=false; scene.add(im); VEH.loaded++; }); }
+function loadVehicles(){ if(!THREE.GLTFLoader||!VSLOTS.length) return; const keys=[...new Set(VSLOTS.map(s=>s.vm))]; const got={}; let left=keys.length;
+  const done=()=>{ if(--left>0) return; if(!keys.every(k=>got[k])) return; // keep the stand-in cars if any model failed
+    keys.forEach(k=>buildVehicleInstances(got[k],VSLOTS.filter(s=>s.vm===k))); FB_MESH.forEach(m=>m&&(m.visible=false)); };
+  keys.forEach(k=>new THREE.GLTFLoader().load('assets/vehicles/'+k+'.glb',g=>{ got[k]=g.scene; done(); },undefined,e=>{ console.warn('vehicle model failed',k,e); done(); })); }
 REFL_HIDE.push(addMesh(bTile.geo(),matTile,{nocull:true}));
 const concMat=new THREE.MeshStandardMaterial({map:CONC.map,vertexColors:true,roughness:0.85});
 addMesh(bConc.geo(),concMat,{cast:true,nocull:true});
@@ -2401,6 +2430,7 @@ showRecords();
 
 buildHalos();
 requestAnimationFrame(frame);
+loadVehicles();
 (function loadAssets(){ let done=false; const fin=ok=>{ if(done) return; done=true; if(ok){ try{ buildRigs(); }catch(e){ console.warn('rig build failed',e); } } $('startBtn').disabled=false; $('loading').textContent=''; };
   if(!THREE.GLTFLoader||!THREE.SkeletonUtils){ setTimeout(()=>fin(false),50); return; }
   $('loading').textContent='Loading characters…';
@@ -2410,7 +2440,7 @@ requestAnimationFrame(frame);
   setTimeout(()=>fin(false),30000); })();
 
 /* test hooks */
-window.LC={mHear,ALARMS,HIDES,CARS,triggerAlarm,WX,wxSet,WX_STATES,setPause,toMenu,SET,REC,RIGS:()=>({RP:!!RP,RC:!!RC,RB:!!RB}),G,P,M,C,CAM,D,LOCS,NODES,EXITS,COL,groundAt,losClear,newGame,startGame,doInteract,findInteract,talkChild,lose,win,
+window.LC={VSLOTS,VEH,mHear,ALARMS,HIDES,CARS,triggerAlarm,WX,wxSet,WX_STATES,setPause,toMenu,SET,REC,RIGS:()=>({RP:!!RP,RC:!!RC,RB:!!RB}),G,P,M,C,CAM,D,LOCS,NODES,EXITS,COL,groundAt,losClear,newGame,startGame,doInteract,findInteract,talkChild,lose,win,
   tp:(x,z,y)=>{ P.pos.set(x,y===undefined?groundAt(x,z,0):y,z); P.trail=[]; },
   mon:(x,z)=>{ M.pos.set(x,0,z); },
   forceLoc:id=>{ window.__forceLoc=id; },

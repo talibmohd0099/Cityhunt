@@ -27,6 +27,15 @@ To install it, open that page on your Android phone, tap `LostCity.apk`, and all
 
 Pull requests build the APK too. You can download it from the run's **Artifacts** section.
 
+## Other versions in this repository
+
+- `godot/`: Lost City rebuilt in Godot 4.6 as a native Android app. Its APK is on the
+  [godot-apk-latest](https://github.com/talibmohd0099/Cityhunt/releases/tag/godot-apk-latest) release.
+  See [godot/README.md](godot/README.md).
+- `getaway/`: Getaway, a one-thumb driving prototype that reuses Lost City's cars. Its APK is on the
+  [getaway-apk-latest](https://github.com/talibmohd0099/Cityhunt/releases/tag/getaway-apk-latest) release.
+  See [getaway/README.md](getaway/README.md).
+
 ## What's inside
 
 | Path | What it is |

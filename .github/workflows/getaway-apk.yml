@@ -1,0 +1,125 @@
+name: Build Getaway APK
+
+# Exports the Getaway prototype (the getaway/ folder) as an Android APK.
+# Every push to main publishes it on the "getaway-apk-latest" release, so the newest
+# APK is always at .../releases/download/getaway-apk-latest/Getaway.apk
+on:
+  push:
+    branches: [main]
+    paths: ["getaway/**", ".github/workflows/getaway-apk.yml"]
+  pull_request:
+    paths: ["getaway/**", ".github/workflows/getaway-apk.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: getaway-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: 4.6.2
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache Godot and its Android export templates
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-android
+
+      - name: Download Godot
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          base="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          mkdir -p ~/godot
+          curl -fsSL --retry 3 "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip" -o godot.zip
+          unzip -q godot.zip -d ~/godot
+          mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          # Only the Android templates are needed out of the full template pack
+          curl -fsSL --retry 3 "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz" -o templates.tpz
+          dest=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p "$dest"
+          unzip -q -j templates.tpz templates/android_release.apk templates/android_debug.apk templates/version.txt -d "$dest"
+          rm godot.zip templates.tpz
+          ls -la ~/godot "$dest"
+
+      - name: Point Godot at the Android SDK and Java
+        run: |
+          mkdir -p ~/.config/godot
+          cat > ~/.config/godot/editor_settings-4.6.tres <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+          cat ~/.config/godot/editor_settings-4.6.tres
+          ls "$ANDROID_HOME/build-tools"
+
+      - name: Import the project
+        working-directory: getaway
+        run: ~/godot/godot --headless --path . --import
+
+      - name: Check the game scripts
+        working-directory: getaway
+        run: |
+          fail=0
+          for f in scripts/*.gd; do
+            out=$(~/godot/godot --headless --path . --check-only -s "res://$f" 2>&1)
+            if echo "$out" | grep -q "SCRIPT ERROR"; then echo "$out"; fail=1; fi
+          done
+          exit $fail
+
+      - name: Play full runs automatically
+        working-directory: getaway
+        run: |
+          # Three different traffic patterns: drive a minute, crash on purpose, retry
+          for seed in 1 2 3; do
+            echo "::group::seed $seed"
+            ~/godot/godot --headless --path . --fixed-fps 30 -s res://tests/autoplay.gd -- --seed=$seed
+            echo "::endgroup::"
+          done
+
+      - name: Export the APK
+        working-directory: getaway
+        env:
+          # Same signing key as the Lost City APKs, so new builds install over old ones
+          GODOT_ANDROID_KEYSTORE_RELEASE_PATH: ${{ github.workspace }}/.github/android/debug.keystore
+          GODOT_ANDROID_KEYSTORE_RELEASE_USER: androiddebugkey
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: android
+        run: |
+          mkdir -p build
+          ~/godot/godot --headless --path . --export-release "Android" build/Getaway.apk 2>&1 | grep -v "^ADDING:"
+          test -s build/Getaway.apk
+          "$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner" verify --verbose build/Getaway.apk | head -5
+          cp build/Getaway.apk "$GITHUB_WORKSPACE/Getaway.apk"
+          ls -la "$GITHUB_WORKSPACE/Getaway.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Getaway-apk
+          path: Getaway.apk
+
+      - name: Publish on the getaway-apk-latest release
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete getaway-apk-latest --yes --cleanup-tag || true
+          gh release create getaway-apk-latest Getaway.apk --target "$GITHUB_SHA" --prerelease \
+            --title "Getaway prototype (latest APK)" \
+            --notes "The Getaway prototype, built from ${GITHUB_SHA::7}. Open this page on your Android phone, tap Getaway.apk, then allow installing from your browser when asked. It installs as its own app, \"Getaway\", next to Lost City."

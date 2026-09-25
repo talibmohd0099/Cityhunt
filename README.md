@@ -13,7 +13,9 @@ python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
-To play it from a public URL, you can enable **GitHub Pages** (Settings → Pages → Deploy from branch → `main`, folder `/`).
+## Deploy
+
+Every push to `main` publishes the game to GitHub Pages through `.github/workflows/deploy-pages.yml`. One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**. On a free GitHub plan the repository has to be public for Pages to work.
 
 ## What's inside
 
@@ -35,6 +37,10 @@ Three.js r128 and its example loaders and post-processing passes are loaded from
 - **Adaptive quality:** slow devices automatically turn off the reflections and bloom.
 - **Sound:** all audio is synthesized with WebAudio.
 - **Fallback:** if the character asset fails to load, the game falls back to procedural characters.
+
+## License
+
+All rights reserved. See [LICENSE](LICENSE). Third-party parts keep their own licenses.
 
 ## Credits
 

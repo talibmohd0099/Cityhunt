@@ -144,6 +144,8 @@ func _ready() -> void:
 	to_menu()
 	if args.has("play"):
 		start_game()
+	elif args.has("settings"):
+		hud.open_settings()
 
 func _grade() -> void:
 	# colour grade, grain and a touch of lens fringing, like the browser version
@@ -413,16 +415,28 @@ func _notification(what: int) -> void:
 func save_settings() -> void:
 	U.save_json(SETTINGS_PATH, settings)
 
-## Graphics: LOW turns off wet-street reflections, glow and the flashlight's shadows, and renders
-## the 3D view at a lower resolution. AUTO starts high and steps down if the phone struggles.
+## Graphics level in use: 0 low, 1 medium, 2 high. LOW turns off wet-street reflections, glow and
+## the flashlight's shadows and renders the 3D view at a lower resolution; MEDIUM keeps them with a
+## lighter reflection and resolution. AUTO starts high and steps down while the frame rate is poor
+## (see _adapt).
+func gfx_level() -> int:
+	match String(settings.gfx):
+		"low": return 0
+		"medium": return 1
+		"high": return 2
+	return 0 if low_q else (1 if q1 else 2)
+
 func apply_gfx() -> void:
-	var low: bool = settings.gfx == "low" or low_q
+	var lv := gfx_level()
 	var vp := get_viewport()
 	var touch := DisplayServer.is_touchscreen_available()
-	vp.scaling_3d_scale = 0.6 if low else (1.0 if settings.gfx == "high" or not touch else 0.8)
-	world.refl_enabled = not low and not q1
-	world.env.glow_enabled = not low
-	pl.light.shadow_enabled = not low
+	# phones render the 3D view a little below screen resolution (the Mobile renderer can only
+	# stretch it back up; FSR sharpening needs the Forward+ renderer)
+	vp.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
+	vp.scaling_3d_scale = [0.6, 0.75, 0.9][lv] if touch else [0.7, 1.0, 1.0][lv]
+	vp.msaa_3d = Viewport.MSAA_DISABLED if lv == 0 else Viewport.MSAA_2X
+	world.set_quality(lv)
+	pl.light.shadow_enabled = lv > 0
 
 # ---------------------------------------------------------------- clues
 func _mat(c: Color, rough: float, metal := 0.0) -> StandardMaterial3D:
@@ -1111,6 +1125,9 @@ var _frames := 0
 func _shot_check() -> void:
 	_frames += 1
 	if _frames == int(args.get("frames", "60")):
+		if args.has("stats"):
+			print("draw calls %d, primitives %d, objects %d" % [RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME),
+				RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME), RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME)])
 		get_viewport().get_texture().get_image().save_png(String(args.shot))
 		print("saved ", args.shot)
 		get_tree().quit()

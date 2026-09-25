@@ -17,6 +17,22 @@ const EXPOSE = `window.LC={__bake:{scene,renderer,camera,COL,SLABS,INTERIORS,UND
   if (!html.includes('window.LC={')) throw new Error('test hook not found in index.html');
   // getters, so the characters built after loading are picked up
   html = html.replace('window.LC={', EXPOSE.replace('RP,RC,RB,', 'get RP(){return RP},get RC(){return RC},get RB(){return RB},'));
+  // The Godot version shows the real car models for every sedan, SUV, taxi and police car (the browser only
+  // for SUVs and a few sedans). Those cars go to the stand-in meshes and VSLOTS, which also keep their type,
+  // lights and open door, so Godot can add the taxi signs, police light bars and open doors to the models itself.
+  const patch = (a, b) => { if (!html.includes(a)) throw new Error('bake patch target not found: ' + a.slice(0, 70)); html = html.replace(a, b); };
+  patch("else if(type==='sedan'&&srand()<0.15) vm='agera'; }",
+    "else if(type==='sedan'&&srand()<0.15) vm='agera'; }\n    if(!vm&&['sedan','suv','taxi','police'].includes(type)) vm='gls';");
+  patch('if(vm) VSLOTS.push({vm,x,z,ry,col});',
+    'if(vm) VSLOTS.push({vm,x,z,ry,col,type,lit:!!o.lit,flash:!!o.flash,ph:o.ph||0,alarm:alarm?ALARMS.length:-1,door:o.door||0});');
+  patch('if(o.door){ // a door left hanging open', 'if(o.door&&!o.fb){ // a door left hanging open');   // Godot swings the model's own door open
+  patch("case 'barR': bGlow.addGeo(", "case 'barR': bG.addGeo(");
+  patch("case 'barB': bGlow.addGeo(", "case 'barB': bG.addGeo(");
+  patch("case 'stripe': bCarP.addGeo(", "case 'stripe': bP.addGeo(");
+  patch('if(T.bar&&o.flash){', 'if(T.bar&&o.flash&&!o.fb){');
+  patch('if(o.alarm){ const a=o.alarm;', 'if(o.alarm&&!o.fb){ const a=o.alarm;');
+  patch('CARS.push({x,z,alongX,type});', 'CARS.push({x,z,alongX,type,ry});');   // for the contact shadows
+  patch('for(const sz of [-1,1]){ const lx=T.L/2+0.05,', 'if(!o.fb) for(const sz of [-1,1]){ const lx=T.L/2+0.05,');
   html = html.replace('</body>', '<script src="http://t/_tools/GLTFExporter.js"></script><script src="http://t/_tools/BufferGeometryUtils.js"></script><script src="http://t/_tools/bake_page.js"></script></body>');
 
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });

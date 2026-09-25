@@ -1,0 +1,16 @@
+Copyright (c) 2026 Talib (talibmohd0099). All rights reserved.
+
+This repository and everything in it (source code, game design, text and
+original assets) is proprietary. No permission is granted to copy, modify,
+merge, publish, distribute, sublicense, sell or host this software or any
+part of it, in source or compiled form, without prior written permission
+from the copyright holder.
+
+Viewing the source on GitHub or playing the published game does not grant
+any license to reuse it.
+
+Third-party components keep their own licenses:
+- three.js and its example loaders, shaders, and the Xbot model and
+  brick/water textures taken from the three.js examples: MIT License,
+  Copyright (c) 2010-2021 three.js authors.
+- Big Shoulders Display and Barlow fonts (Google Fonts): SIL Open Font License.

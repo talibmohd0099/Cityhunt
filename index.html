@@ -53,9 +53,12 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:3px}
 #compassMark{position:absolute;left:50%;bottom:0;width:1px;height:5px;background:var(--sodium)}
 #aware{position:absolute;left:50%;top:calc(40px + env(safe-area-inset-top,0px));transform:translateX(-50%);width:34px;height:18px;opacity:0;transition:opacity .3s}
 #aware svg{width:34px;height:18px;display:block}
-#clueBtn{pointer-events:auto;position:absolute;right:calc(16px + env(safe-area-inset-right,0px));top:calc(12px + env(safe-area-inset-top,0px));
+#clueBtn{pointer-events:auto;position:absolute;right:calc(64px + env(safe-area-inset-right,0px));top:calc(12px + env(safe-area-inset-top,0px));
   background:var(--glass);border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-family:var(--cond);font-weight:600;letter-spacing:.14em;font-size:13px;min-height:36px}
 #clueBtn b{color:var(--sodium);font-weight:700}
+#pauseBtn{pointer-events:auto;position:absolute;right:calc(16px + env(safe-area-inset-right,0px));top:calc(12px + env(safe-area-inset-top,0px));width:40px;height:36px;padding:0;
+  display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--line);border-radius:4px}
+#pauseBtn svg{width:16px;height:16px;fill:currentColor}
 #log{pointer-events:auto;position:absolute;right:calc(16px + env(safe-area-inset-right,0px));top:calc(56px + env(safe-area-inset-top,0px));width:min(360px,calc(100vw - 32px));max-height:52vh;overflow:auto;
   background:rgba(8,9,11,.88);border:1px solid var(--line);border-radius:4px;padding:14px 16px}
 #log h3{margin:0 0 8px;font-family:var(--cond);font-weight:600;font-size:12px;letter-spacing:.18em;color:var(--muted)}
@@ -114,8 +117,25 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:3px}
 #end{justify-content:center;align-items:flex-start;background:rgba(0,0,0,.86);z-index:5}
 #end .big{font-size:clamp(40px,min(13vw,17vh),120px)}
 #endStats{margin-top:14px;font-family:var(--cond);font-weight:600;letter-spacing:.14em;font-size:14px;color:var(--muted);text-transform:uppercase}
+.ghost{pointer-events:auto;border:1px solid var(--line);border-radius:3px;background:rgba(8,9,11,.55);color:var(--text);font-family:var(--cond);font-weight:700;font-size:16px;letter-spacing:.16em;padding:12px 20px;min-height:48px;cursor:pointer}
+.ghost:active{background:rgba(221,225,230,.14)}
+#pause{justify-content:center;align-items:flex-start;background:rgba(4,5,7,.74);z-index:5}
+#pause .big{font-size:clamp(44px,min(13vw,17vh),110px)}
+#records{margin-top:10px}
+#settings{position:absolute;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:16px}
+#setBox{width:min(420px,100%);max-height:100%;overflow:auto;background:#0c0e11;border:1px solid var(--line);border-radius:6px;padding:18px 20px 20px}
+#setBox h2{margin:0 0 6px;font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:.06em}
+.setRow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-top:1px solid rgba(221,225,230,.1);font-family:var(--cond);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase}
+.setRow output{color:var(--muted);min-width:3.2em;text-align:right;font-weight:500}
+.setRow input[type=range]{flex:1;max-width:180px;accent-color:var(--sodium);touch-action:pan-x;height:28px}
+.setRow input[type=checkbox]{width:22px;height:22px;accent-color:var(--sodium)}
+.seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:36px;font-family:var(--cond);font-weight:700;letter-spacing:.12em;font-size:13px;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--sodium);color:#140f08}
+#setBox .go{margin-top:16px;width:100%;font-size:22px;padding:10px}
+@media (max-height:460px){ #setBox{padding:12px 18px 14px} #setBox h2{font-size:24px} .setRow{padding:6px 0} #setBox .go{margin-top:10px;min-height:44px;font-size:20px} }
 #err{position:absolute;left:12px;right:12px;bottom:12px;background:#2a0d0a;color:#ffd9d2;font:12px/1.4 ui-monospace,monospace;padding:10px;border-radius:4px;white-space:pre-wrap;z-index:9}
-@media (orientation:portrait),(max-width:700px){ #subs{bottom:calc(250px + env(safe-area-inset-bottom,0px));width:88vw} #obj{max-width:58vw} #compass{top:calc(104px + env(safe-area-inset-top,0px))} #map{width:92px;height:92px} #choices{bottom:calc(330px + env(safe-area-inset-bottom,0px))} #aware{top:calc(130px + env(safe-area-inset-top,0px))} }
+@media (orientation:portrait),(max-width:700px){ #subs{bottom:calc(250px + env(safe-area-inset-bottom,0px));width:88vw} #obj{max-width:calc(100vw - 200px)} #compass{top:calc(104px + env(safe-area-inset-top,0px))} #map{width:92px;height:92px} #choices{bottom:calc(330px + env(safe-area-inset-bottom,0px))} #aware{top:calc(130px + env(safe-area-inset-top,0px))} }
 @media (min-width:900px) and (pointer:fine){ .touchonly{display:none} }
 @media (pointer:coarse){ .deskonly{display:none} }
 @media (prefers-reduced-motion:reduce){ #toast,#subs,#danger{transition:none} }
@@ -130,6 +150,7 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:3px}
     <div id="compass"><div id="compassStrip"></div><div id="compassMark"></div></div>
     <div id="aware"><svg viewBox="0 0 34 18" aria-hidden="true"><path d="M2 9 C8 1, 26 1, 32 9 C26 17, 8 17, 2 9 Z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle id="awareDot" cx="17" cy="9" r="4.2" fill="currentColor"/></svg></div>
     <button id="clueBtn" type="button">CLUES <b id="clueCount">0</b>/5</button>
+    <button id="pauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1"/><rect x="9.5" y="2" width="3.5" height="12" rx="1"/></svg></button>
     <div id="log" hidden></div>
     <canvas id="map" width="208" height="208" aria-label="Minimap"></canvas>
     <div id="choices" hidden></div>
@@ -146,12 +167,13 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:3px}
   </div>
 
   <div class="screen" id="start">
-    <div class="eyebrow">03:12 · Heavy rain · Curfew in effect</div>
+    <div class="eyebrow">03:12 · Passing storms · Curfew in effect</div>
     <h1 class="big">LOST CITY</h1>
     <p class="lede">A child is lost somewhere in these streets. Something far larger is out there with her. Find her, keep her close, and get her out of the city.</p>
     <div class="meta touchonly"><b>Left thumb</b> moves · <b>Right thumb</b> looks · push the stick all the way to run · headphones on</div>
     <div class="meta deskonly"><b>WASD</b> walk · <b>Shift</b> run · <b>Space</b> sprint · <b>Drag</b> look · <b>C</b> crouch · <b>F</b> light · <b>E</b> interact</div>
-    <div class="row"><button class="go" id="startBtn" type="button" disabled>START</button><span id="loading">Building the city…</span></div>
+    <div class="meta" id="records" hidden></div>
+    <div class="row"><button class="go" id="startBtn" type="button" disabled>START</button><button class="ghost" id="setBtn" type="button">SETTINGS</button><span id="loading">Building the city…</span></div>
   </div>
 
   <div class="screen" id="end" hidden>
@@ -159,7 +181,25 @@ button:focus-visible{outline:2px solid var(--sodium);outline-offset:3px}
     <h1 class="big" id="endTitle">YOU WERE FOUND</h1>
     <p class="lede" id="endSub"></p>
     <div id="endStats"></div>
-    <div class="row"><button class="go" id="againBtn" type="button">TRY AGAIN</button></div>
+    <div class="row"><button class="go" id="againBtn" type="button">TRY AGAIN</button><button class="ghost" id="endMenuBtn" type="button">MENU</button></div>
+  </div>
+
+  <div class="screen" id="pause" hidden>
+    <div class="eyebrow" id="pauseInfo">Paused</div>
+    <h1 class="big">PAUSED</h1>
+    <div class="row"><button class="go" id="resumeBtn" type="button">RESUME</button><button class="ghost" id="pSetBtn" type="button">SETTINGS</button><button class="ghost" id="restartBtn" type="button">RESTART</button><button class="ghost" id="quitBtn" type="button">MENU</button></div>
+  </div>
+
+  <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <div id="setBox">
+      <h2 id="setTitle">SETTINGS</h2>
+      <label class="setRow">Volume <input type="range" id="sVol" min="0" max="100" step="5"><output id="oVol"></output></label>
+      <label class="setRow">Rain sound <input type="range" id="sRain" min="0" max="100" step="5"><output id="oRain"></output></label>
+      <label class="setRow">Look speed <input type="range" id="sSens" min="40" max="200" step="10"><output id="oSens"></output></label>
+      <div class="setRow">Graphics <div class="seg" id="sGfx"><button type="button" data-q="auto">AUTO</button><button type="button" data-q="low">LOW</button><button type="button" data-q="high">HIGH</button></div></div>
+      <label class="setRow">Vibration <input type="checkbox" id="sVib"></label>
+      <button class="go" id="setDone" type="button">DONE</button>
+    </div>
   </div>
   <div id="fade"></div>
 </div>
@@ -196,6 +236,14 @@ const DIRS=['north','north-east','east','south-east','south','south-west','west'
 function dirWord(dx,dz){ const b=(Math.atan2(dx,-dz)*180/Math.PI+360)%360; return DIRS[Math.round(b/45)%8]; }
 
 const isTouch=matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
+
+/* ================= SETTINGS + RECORDS (saved on the device) ================= */
+function loadJSON(k){ try{ return JSON.parse(localStorage.getItem(k)||'{}')||{}; }catch(_){ return {}; } }
+function saveJSON(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(_){} }
+const SET=Object.assign({vol:80,rain:60,sens:100,gfx:'auto',vib:true},loadJSON('lostcity.settings'));
+const REC=Object.assign({runs:0,wins:0,best:0},loadJSON('lostcity.records'));
+function buzz(p){ if(SET.vib&&navigator.vibrate) try{ navigator.vibrate(p); }catch(_){} }
+const fmtT=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
 
 /* ================= RENDERER ================= */
 const renderer=new THREE.WebGLRenderer({antialias:!isTouch, powerPreference:'high-performance'});
@@ -875,7 +923,7 @@ const REFL={on:true,cam:new THREE.PerspectiveCamera(),texM:new THREE.Matrix4(),u
 REFL.rt=new THREE.WebGLRenderTarget(64,64,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,format:THREE.RGBAFormat});
 const texLoad=new THREE.TextureLoader();
 const TEXON={brick:{value:0},rip:{value:0}};
-const RIPTEX=texLoad.load('assets/ripples.jpg',()=>TEXON.rip.value=1); RIPTEX.wrapS=RIPTEX.wrapT=THREE.RepeatWrapping;
+let RIPON=false; const RIPTEX=texLoad.load('assets/ripples.jpg',()=>{ RIPON=true; TEXON.rip.value=1; }); RIPTEX.wrapS=RIPTEX.wrapT=THREE.RepeatWrapping;
 const BRICK=texLoad.load('assets/brick.jpg',()=>TEXON.brick.value=1); BRICK.wrapS=BRICK.wrapT=THREE.RepeatWrapping; BRICK.encoding=THREE.sRGBEncoding; BRICK.anisotropy=Math.min(4,maxAniso);
 function wetify(mat,wet){
   mat.onBeforeCompile=sh=>{
@@ -1079,6 +1127,12 @@ const rainPos=new Float32Array(RAIN_N*6); const rainD=[];
 for(let i=0;i<RAIN_N;i++) rainD.push({x:rand(-20,20),y:rand(-8,16),z:rand(-20,20),v:rand(19,25)});
 const rainGeo=new THREE.BufferGeometry(); rainGeo.setAttribute('position',new THREE.BufferAttribute(rainPos,3));
 const rain=new THREE.LineSegments(rainGeo,new THREE.LineBasicMaterial({color:0x9aa9bd,transparent:true,opacity:0.3,depthWrite:false})); rain.frustumCulled=false; scene.add(rain);
+/* weather: the rain comes and goes. WX.i is 0 (dry) to 1 (storm) and eases toward WX.to */
+const WX_STATES=[{n:'clear',i:0,w:0.22},{n:'drizzle',i:0.3,w:0.3},{n:'rain',i:0.65,w:0.3},{n:'storm',i:1,w:0.18}];
+const WX={i:0.65,to:0.65,s:'rain',t:45};
+function wxPick(not){ const c=WX_STATES.filter(s=>s.n!==not); let r=Math.random()*c.reduce((a,s)=>a+s.w,0); for(const s of c){ r-=s.w; if(r<=0) return s; } return c[0]; }
+function wxSet(s,instant){ WX.s=s.n; WX.to=s.i; WX.t=rand(35,80); if(instant) WX.i=s.i; }
+const WX_MSG={clear:'The rain has stopped. Every footstep carries now.',drizzle:'Light rain. Your footsteps carry further.',rain:'The rain is picking up. It covers some of your noise.',storm:'A storm is rolling in. It will struggle to hear you.'};
 const SPL_N=160; const splPos=new Float32Array(SPL_N*3); const splD=[]; for(let i=0;i<SPL_N;i++) splD.push({x:0,y:-99,z:0,t:rand(0,0.3)});
 const splGeo=new THREE.BufferGeometry(); splGeo.setAttribute('position',new THREE.BufferAttribute(splPos,3));
 const splash=new THREE.Points(splGeo,new THREE.PointsMaterial({color:0xaab6c6,size:0.09,transparent:true,opacity:0.5,depthWrite:false,map:glowTex,blending:THREE.AdditiveBlending})); splash.frustumCulled=false; scene.add(splash);
@@ -1438,13 +1492,13 @@ function initAudio(){
   if(AU.ctx) return; const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
   const C=new AC(); AU.ctx=C;
   const comp=C.createDynamicsCompressor(); comp.threshold.value=-14; comp.ratio.value=4; comp.connect(C.destination);
-  const master=C.createGain(); master.gain.value=0.95; master.connect(comp); AU.master=master;
+  const master=C.createGain(); master.gain.value=0.95*SET.vol/100; master.connect(comp); AU.master=master;
   const len=C.sampleRate*2, buf=C.createBuffer(1,len,C.sampleRate), d=buf.getChannelData(0); for(let i=0;i<len;i++) d[i]=Math.random()*2-1; AU.noise=buf;
   const bb=C.createBuffer(1,len,C.sampleRate), bd=bb.getChannelData(0); let last=0; for(let i=0;i<len;i++){ const w=Math.random()*2-1; last=(last+0.02*w)/1.02; bd[i]=last*3.5; } AU.brown=bb;
   const loop=(b,filters,g)=>{ const s=C.createBufferSource(); s.buffer=b; s.loop=true; let n=s; filters.forEach(f=>{ n.connect(f); n=f; }); const gn=C.createGain(); gn.gain.value=g; n.connect(gn); gn.connect(master); s.start(); return gn; };
   const bq=(type,f,q)=>{ const b=C.createBiquadFilter(); b.type=type; b.frequency.value=f; if(q) b.Q.value=q; return b; };
-  AU.rainLP=bq('lowpass',7000); AU.rainG=loop(buf,[bq('highpass',450),AU.rainLP],0.16);
-  AU.rainLP2=bq('lowpass',3000); AU.rain2=loop(bb,[bq('bandpass',900,0.5),AU.rainLP2],0.22);
+  AU.rainLP=bq('lowpass',4200); AU.rainG=loop(buf,[bq('highpass',600),AU.rainLP],0);
+  AU.rainLP2=bq('lowpass',2200); AU.rain2=loop(bb,[bq('bandpass',800,0.5),AU.rainLP2],0);
   AU.windLP=bq('lowpass',380); AU.windG=loop(bb,[AU.windLP],0.12);
   // tension drone
   const dg=C.createGain(); dg.gain.value=0; dg.connect(master); AU.droneG=dg;
@@ -1554,7 +1608,7 @@ btn('bLight',()=>toggleFlash());
 btn('bUse',()=>doInteract());
 function toggleCrouch(){ if(G.phase!=='explore'&&G.phase!=='escape') return; P.crouch=!P.crouch; $('bCrouch').classList.toggle('on',P.crouch); }
 function toggleFlash(){ if(G.phase!=='explore'&&G.phase!=='escape'&&G.phase!=='dialog') return; P.flash=!P.flash; $('bLight').classList.toggle('on',P.flash); sClick(); }
-addEventListener('keydown',e=>{ input.keys[e.code]=true; if(e.code==='KeyC'||e.code==='ControlLeft') toggleCrouch(); if(e.code==='KeyF') toggleFlash(); if(e.code==='KeyE'||e.code==='Enter'&&G.phase!=='menu') doInteract(); if(e.code==='Space') e.preventDefault(); if(G.phase==='dialog'&&(e.code==='Digit1'||e.code==='Digit2')) chooseLine(e.code==='Digit1'?0:1); });
+addEventListener('keydown',e=>{ if(e.code==='Escape'||e.code==='KeyP'){ if(!$('settings').hidden) closeSettings(); else if(paused) setPause(false); else setPause(true); return; } if(paused) return; input.keys[e.code]=true; if(e.code==='KeyC'||e.code==='ControlLeft') toggleCrouch(); if(e.code==='KeyF') toggleFlash(); if(e.code==='KeyE'||e.code==='Enter'&&G.phase!=='menu') doInteract(); if(e.code==='Space') e.preventDefault(); if(G.phase==='dialog'&&(e.code==='Digit1'||e.code==='Digit2')) chooseLine(e.code==='Digit1'?0:1); });
 addEventListener('keyup',e=>{ input.keys[e.code]=false; });
 addEventListener('blur',()=>{ input.keys={}; input.sprintBtn=false; });
 addEventListener('contextmenu',e=>e.preventDefault());
@@ -1626,7 +1680,7 @@ function placeClues(){
   G.clues.push({type:'cry',title:'Distant crying',text:'',found:false,virtual:true});
   $('clueCount').textContent='0';
 }
-function findClue(cl){ if(cl.found) return; cl.found=true; cl.foundAt=G.time; G.found++; $('clueCount').textContent=G.found; if(cl.glint) cl.glint.visible=false; if(cl.obj) cl.obj.visible=cl.type==='prints';
+function findClue(cl){ if(cl.found) return; buzz(18); cl.found=true; cl.foundAt=G.time; G.found++; $('clueCount').textContent=G.found; if(cl.glint) cl.glint.visible=false; if(cl.obj) cl.obj.visible=cl.type==='prints';
   toast(cl.title,cl.text,9); sChime(); if(!$('log').hidden) renderLog(); }
 
 /* ================= CHILD & LOCATION ================= */
@@ -1658,6 +1712,7 @@ function newGame(){
   const cand=NODES.map((n,i)=>i).filter(i=>{ const d=Math.hypot(NODES[i].x-P.pos.x,NODES[i].z-P.pos.z); return d>95&&d<160; });
   M.cur=cand.length?cand[Math.random()*cand.length|0]:0; M.prev=-1; const n=NODES[M.cur]; M.pos.set(n.x,0,n.z); M.yaw=Math.random()*TAU; M.state='PATROL'; M.path=[]; M.awareness=0; M.speed=0; M.pauseT=2; M.lastSeenT=-99; M.crossing=false; M.roarCD=0; M.vocalT=10; M.attackT=0;
   placeClues();
+  wxSet(wxPick(),true);
   G.found=0; G.time=0; G.quiet=0; G.helpSaid=false; G.cryHeard=false; G.cryT=6; G.dialog=0; G.escapeT=0;
   D.nextCross=16+rand(0,6); D.nextPhantom=rand(70,95); D.nextLightning=rand(20,30); D.nextSiren=rand(8,20); D.crossing=null; D.escT=25; D.nearT=0; D.farT=0;
   setObj('FIND THE CHILD','Child location: unknown');
@@ -1665,22 +1720,23 @@ function newGame(){
   G.phase='explore';
   sub('<i>YOU</i>She has to be somewhere close. Stay quiet. Stay out of sight.',5);
 }
-function startGame(){ initAudio(); if(AU.ctx&&AU.ctx.state==='suspended') AU.ctx.resume();
+function startGame(){ initAudio(); paused=false; $('pause').hidden=true; $('settings').hidden=true; if(AU.ctx&&AU.ctx.state==='suspended') AU.ctx.resume();
   $('start').hidden=true; $('end').hidden=true; $('hud').hidden=false; newGame();
   try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').catch(()=>{}); }catch(_){}
 }
 $('startBtn').addEventListener('click',startGame);
 $('againBtn').addEventListener('click',startGame);
 
-function lose(){ if(G.phase==='caught'||G.phase==='lost') return; G.phase='caught'; G.endT=0; M.state='ATTACK'; M.attackT=0; G.deaths++;
+function lose(){ if(G.phase==='caught'||G.phase==='lost') return; G.phase='caught'; G.endT=0; M.state='ATTACK'; M.attackT=0; G.deaths++; buzz([90,50,280]);
   const pp=posParams(M.pos.x,3,M.pos.z,30); sGrowl(0.9,pp.pan,4000,1.4,true); CAM.shake=1.2; }
-function win(){ G.phase='won'; G.endT=0; sChime(); }
+function win(){ G.phase='won'; G.endT=0; sChime(); buzz([40,60,40]); }
 function showEnd(won){ $('hud').hidden=true; $('end').hidden=false;
   const mins=Math.floor(G.time/60), secs=Math.floor(G.time%60);
   $('endTitle').textContent=won?'CHILD RESCUED':'YOU WERE FOUND';
   $('endEyebrow').textContent=won?'Evacuation point · '+G.exit.name+' barricade':'03:'+String(12+Math.min(47,mins)).padStart(2,'0')+' · Somewhere in the city';
   $('endSub').textContent=won?'You carried her through the rain and out of the city. She is safe now.':(G.phase==='lost'&&C.state!=='hiding'?'It caught you in the open. She is still out there, waiting for you.':'It caught you in the open. She is still hiding, waiting for someone to come.');
-  $('endStats').textContent=`Time ${mins}:${String(secs).padStart(2,'0')} · Clues ${G.found}/5`;
+  REC.runs++; let newBest=false; if(won){ REC.wins++; if(!REC.best||G.time<REC.best){ REC.best=G.time; newBest=true; } } saveJSON('lostcity.records',REC);
+  $('endStats').textContent=`Time ${mins}:${String(secs).padStart(2,'0')} · Clues ${G.found}/5`+(newBest?' · New best rescue':REC.best?' · Best '+fmtT(REC.best):'');
   $('againBtn').textContent=won?'PLAY AGAIN':'TRY AGAIN';
   G.phase=won?'wonEnd':'lost'; }
 
@@ -1768,7 +1824,7 @@ function updatePlayer(dt){
 /* ================= CAMERA ================= */
 const _a=new V3(), _b=new V3(), _f=new V3();
 function updateCamera(dt){
-  const sens=isTouch?0.0058:0.005;
+  const sens=(isTouch?0.0058:0.005)*SET.sens/100;
   CAM.yaw-=input.lookDX*sens; CAM.pitch=clamp(CAM.pitch+input.lookDY*sens*0.85,-0.5,1.05); input.lookDX=input.lookDY=0;
   if(G.phase==='caught'){ const want=Math.atan2(M.pos.x-P.pos.x,M.pos.z-P.pos.z); CAM.yaw+=angDiff(CAM.yaw,want)*Math.min(1,dt*5); CAM.pitch=lerp(CAM.pitch,-0.35,Math.min(1,dt*3)); }
   const cp=Math.cos(CAM.pitch), sp=Math.sin(CAM.pitch);
@@ -1833,7 +1889,7 @@ function mPatrolNext(){
 }
 function mHear(x,z,precise){ if(M.state==='CHASE'||M.state==='ATTACK') return; if(M.crossing){ M.crossing=false; D.crossing=null; }
   M.invX=x; M.invZ=z; if(M.state!=='INVESTIGATE'){ mSetState('INVESTIGATE'); if(Math.random()<0.5) vocal(0.5); } mGoal(x,z); }
-function startChase(){ if(M.state==='CHASE') return; mSetState('CHASE'); M.awareness=1; M.crossing=false; D.crossing=null;
+function startChase(){ if(M.state==='CHASE') return; buzz(70); mSetState('CHASE'); M.awareness=1; M.crossing=false; D.crossing=null;
   if(M.roarCD<=0){ const pp=posParams(M.pos.x,3,M.pos.z,40); sGrowl(Math.max(0.35,pp.vol*1.3),pp.pan,Math.max(pp.lp,1500),1.8,true); M.roarCD=14; } sStinger(); }
 function vocal(v){ const pp=posParams(M.pos.x,3.5,M.pos.z,30); if(Math.random()<0.5) sClicks(pp.vol*v,pp.pan,pp.lp); else sGrowl(pp.vol*v*0.8,pp.pan,pp.lp,rand(1.2,2),false); }
 function monsterPerceive(dt){
@@ -1857,7 +1913,7 @@ function monsterPerceive(dt){
     } else if(M.state!=='CHASE') M.awareness=Math.max(0,M.awareness-dt*0.09);
     // hearing
     M.hearCD-=dt;
-    if(P.noise>0&&M.state!=='CHASE'){ let r=P.noise*(esc?1.3:1); if(!losClear(M.pos.x,M.pos.z,P.pos.x,P.pos.z,2)) r*=0.55;
+    if(P.noise>0&&M.state!=='CHASE'){ let r=P.noise*(esc?1.3:1)*(1.25-0.5*WX.i); if(!losClear(M.pos.x,M.pos.z,P.pos.x,P.pos.z,2)) r*=0.55;
       if(d<r){ if(d<r*0.3) M.awareness+=0.7*dt; if(M.awareness>=1){ M.lastKnown.copy(P.pos); M.lastSeenT=G.time; startChase(); } else if(M.hearCD<=0){ M.hearCD=1.4; const e=d*0.18; mHear(P.pos.x+rand(-e,e),P.pos.z+rand(-e,e)); } } }
   }
 }
@@ -2016,7 +2072,7 @@ function director(dt){
     const bx=P.pos.x-Math.sin(CAM.yaw)*22, bz=P.pos.z-Math.cos(CAM.yaw)*22; const pp=posParams(bx,0,bz,22);
     for(let k=0;k<4;k++) setTimeout(()=>sThud(0.5,pp.pan+rand(-0.1,0.1),420),k*620); }
   // lightning & sirens
-  if(G.time>D.nextLightning){ D.nextLightning=G.time+rand(30,65); lightning(rand(0.5,1)); }
+  if(G.time>D.nextLightning){ D.nextLightning=G.time+(WX.i>0.85?rand(16,38):rand(30,65)); if(WX.i>0.5) lightning(rand(0.5,1)*(0.5+0.5*WX.i)); }
   if(G.time>D.nextSiren){ D.nextSiren=G.time+rand(35,70); sSiren(); }
   // monster vocalises now and then
   M.vocalT-=dt; if(M.vocalT<=0){ M.vocalT=rand(9,18); if(dPM<70) vocal(0.8); }
@@ -2066,12 +2122,17 @@ function updateWorld(dt,t){
   for(const n of NEONS){ let k=1; if(n.mode==='flicker'){ k=Math.sin(t*1.3+n.ph)>0.93?(Math.random()<0.5?0.2:1):1; } else if(n.mode==='broken'){ const s=Math.sin(t*0.7+n.ph); k=s>0.4?(Math.random()<0.3?0.1:0.9):s>-0.2?0.08:1; } else if(n.mode==='dim') k=0.8;
     n.m.material.color.setScalar(k); n.L.on=k>=0.3; }
   // rain
-  const hideRain=camera.position.y<-1||inInterior(camera.position.x,camera.position.z);
+  WX.t-=dt; if(WX.t<=0){ const s=wxPick(WX.s); const was=WX.to; wxSet(s); if((G.phase==='explore'||G.phase==='escape')&&Math.abs(s.i-was)>0.2) toast('WEATHER',WX_MSG[s.n],5); }
+  WX.i+=clamp(WX.to-WX.i,-dt/14,dt/14);
+  const nR=Math.round(RAIN_N*WX.i), nS=Math.round(SPL_N*WX.i);
+  if(RIPON) TEXON.rip.value=WX.i; scene.fog.density=0.0115*(0.85+0.3*WX.i);
+  rain.material.opacity=0.16+0.16*WX.i; rainGeo.setDrawRange(0,nR*2); splGeo.setDrawRange(0,nS);
+  const hideRain=nR<4||camera.position.y<-1||inInterior(camera.position.x,camera.position.z);
   rain.visible=!hideRain; splash.visible=!hideRain;
-  if(!hideRain){ const wind=1.6; for(let i=0;i<RAIN_N;i++){ const r=rainD[i]; r.y-=r.v*dt; r.x+=wind*dt*0.4; if(r.y<-6||r.x>20){ r.y=rand(8,16); r.x=rand(-20,20); r.z=rand(-20,20); }
+  if(!hideRain){ const wind=1.6; for(let i=0;i<nR;i++){ const r=rainD[i]; r.y-=r.v*dt; r.x+=wind*dt*0.4; if(r.y<-6||r.x>20){ r.y=rand(8,16); r.x=rand(-20,20); r.z=rand(-20,20); }
       const x=cx+r.x, z=cz+r.z, y=camera.position.y+r.y; const o=i*6; rainPos[o]=x; rainPos[o+1]=y; rainPos[o+2]=z; rainPos[o+3]=x-wind*0.02; rainPos[o+4]=y+0.55; rainPos[o+5]=z; }
     rainGeo.attributes.position.needsUpdate=true;
-    for(let i=0;i<SPL_N;i++){ const s=splD[i]; s.t-=dt; if(s.t<=0){ s.t=rand(0.08,0.3); s.x=cx+rand(-14,14); s.z=cz+rand(-14,14); s.y=groundAt(s.x,s.z,0)+0.03; if(inInterior(s.x,s.z)) s.y=-99; } splPos[i*3]=s.x; splPos[i*3+1]=s.y; splPos[i*3+2]=s.z; }
+    for(let i=0;i<nS;i++){ const s=splD[i]; s.t-=dt; if(s.t<=0){ s.t=rand(0.08,0.3); s.x=cx+rand(-14,14); s.z=cz+rand(-14,14); s.y=groundAt(s.x,s.z,0)+0.03; if(inInterior(s.x,s.z)) s.y=-99; } splPos[i*3]=s.x; splPos[i*3+1]=s.y; splPos[i*3+2]=s.z; }
     splGeo.attributes.position.needsUpdate=true; }
   // distant traffic
   for(let k=0;k<TRAF_N;k++){ const c=TRAF[k], L=c.L; c.t+=c.v*dt; if(c.t>1) c.t-=1; if(c.t<0) c.t+=1; const a=lerp(L.from,L.to,c.t); const toward=(c.v<0)===(L.to>0);
@@ -2095,14 +2156,15 @@ let heartT=0;
 function audioMix(dt){ if(!AU.ctx) return; const C=AU.ctx, now=C.currentTime;
   const under=P.pos.y<-2, inside=!!inInterior(P.pos.x,P.pos.z);
   const q=1-G.quiet*0.8;
-  AU.rainLP.frequency.setTargetAtTime(under?350:inside?1100:7000,now,0.3); AU.rainG.gain.setTargetAtTime((under?0.05:inside?0.09:0.16)*q,now,0.4);
-  AU.rainLP2.frequency.setTargetAtTime(under?250:inside?700:3000,now,0.3); AU.rain2.gain.setTargetAtTime((under?0.1:0.22)*q,now,0.4);
+  const rv=q*SET.rain/100*Math.pow(WX.i,0.8);
+  AU.rainLP.frequency.setTargetAtTime(under?350:inside?1000:3000+1600*WX.i,now,0.3); AU.rainG.gain.setTargetAtTime((under?0.03:inside?0.05:0.085)*rv,now,0.6);
+  AU.rainLP2.frequency.setTargetAtTime(under?250:inside?650:2200,now,0.3); AU.rain2.gain.setTargetAtTime((under?0.06:0.13)*rv,now,0.6);
   AU.windG.gain.setTargetAtTime((under?0.03:0.08+0.06*Math.max(0,Math.sin(G.time*0.13)))*q,now,1.0);
   const dPM=Math.hypot(P.pos.x-M.pos.x,P.pos.z-M.pos.z);
   const ten=G.phase==='explore'||G.phase==='escape'?Math.max(M.state==='CHASE'?1:0,clamp(1-dPM/55,0,1)):0;
   AU.droneG.gain.setTargetAtTime(ten*0.16,now,0.8);
   heartT-=dt; const close=M.state==='CHASE'?1:clamp(1-(dPM-6)/24,0,1);
-  if(close>0.05&&(G.phase==='explore'||G.phase==='escape')&&heartT<=0){ heartT=lerp(1.1,0.4,close); sHeart(0.2+0.4*close); }
+  if(close>0.05&&(G.phase==='explore'||G.phase==='escape')&&heartT<=0){ heartT=lerp(1.1,0.4,close); sHeart(0.2+0.4*close); if(close>0.55) buzz(28); }
   $('danger').style.opacity=(G.phase==='explore'||G.phase==='escape')?(M.state==='CHASE'?0.55+0.25*Math.sin(G.time*8):close*0.35):0;
 }
 
@@ -2202,9 +2264,10 @@ function frame(now){
   REFL.uT.value=t; if(REFL.on) renderRefl(); else REFL.uOn.value=0;
   if(postOn&&composer){ gradePass.uniforms.uTime.value=t; composer.render(dt); } else renderer.render(scene,camera);
   // adaptive quality
-  if(G.phase!=="menu"&&!lowQ&&!window.__noAdapt){ fpsAcc+=raw; fpsN++; fpsCheck+=raw; if(fpsCheck>5){ const fps=fpsN/fpsAcc; fpsAcc=0; fpsN=0; fpsCheck=0; if(fps<28&&(postOn||REFL.on)&&!window.__q1){ window.__q1=true; if(fps<20){ postOn=false; REFL.on=false; } else { REFL.on=false; bloomPass&&(bloomPass.enabled=true); } fpsCheck=0; return; } if(fps<28){ lowQ=true; postOn=false; REFL.on=false; renderer.setPixelRatio(Math.min(1,PR)); flash.castShadow=false; renderer.shadowMap.enabled=false; scene.traverse(o=>{ if(o.material&&o.material.needsUpdate!==undefined) o.material.needsUpdate=true; }); onResize(); } } }
+  if(G.phase!=="menu"&&!paused&&!lowQ&&!window.__noAdapt&&SET.gfx==='auto'){ fpsAcc+=raw; fpsN++; fpsCheck+=raw; if(fpsCheck>5){ const fps=fpsN/fpsAcc; fpsAcc=0; fpsN=0; fpsCheck=0; if(fps<28&&(postOn||REFL.on)&&!window.__q1){ window.__q1=true; if(fps<20){ postOn=false; REFL.on=false; } else { REFL.on=false; bloomPass&&(bloomPass.enabled=true); } fpsCheck=0; return; } if(fps<28){ lowQ=true; postOn=false; REFL.on=false; renderer.setPixelRatio(Math.min(1,PR)); flash.castShadow=false; renderer.shadowMap.enabled=false; scene.traverse(o=>{ if(o.material&&o.material.needsUpdate!==undefined) o.material.needsUpdate=true; }); onResize(); } } }
 }
 function tick(dt,t){
+  if(paused) return;
   if(G.phase==='menu'){ menuT+=dt; menuCam(menuT); MON.g.visible=false; CH.root.visible=false; PH.root.visible=false; flash.intensity=0; beam.visible=false; }
   else {
     MON.g.visible=true; CH.root.visible=true; PH.root.visible=true;
@@ -2222,6 +2285,48 @@ function tick(dt,t){
   }
   updateWorld(dt,t);
 }
+/* ================= PAUSE + SETTINGS ================= */
+let paused=false;
+const canPause=()=>G.phase==='explore'||G.phase==='escape';
+function releaseInput(){ input.keys={}; input.sprintBtn=false; input.jx=input.jy=0; input.lookDX=input.lookDY=0; joyId=null; joyKnob.style.transform=''; joyBase.classList.remove('on'); joyBase.style.left=''; joyBase.style.top=''; for(const k in looks) delete looks[k]; $('bSprint').classList.remove('hold'); }
+function setPause(on){ if(on&&!canPause()) return; if(paused===on) return; paused=on; releaseInput();
+  $('pause').hidden=!on; $('hud').hidden=on; if(!on) $('settings').hidden=true;
+  if(on) $('pauseInfo').textContent=`Paused · ${fmtT(G.time)} · Clues ${G.found}/5`;
+  if(AU.ctx){ if(on) AU.ctx.suspend().catch(()=>{}); else AU.ctx.resume().catch(()=>{}); } }
+function toMenu(){ paused=false; releaseInput(); G.phase='menu'; menuT=0;
+  ['pause','settings','end','hud','log','choices'].forEach(id=>$(id).hidden=true); $('start').hidden=false;
+  $('fade').style.opacity=0; $('danger').style.opacity=0; elSubs.style.opacity=0; elToast.classList.remove('show'); beam.visible=false;
+  if(AU.ctx){ AU.ctx.resume().catch(()=>{}); AU.droneG.gain.setTargetAtTime(0,AU.ctx.currentTime,0.3); } showRecords(); }
+function showRecords(){ const el=$('records'); if(!REC.runs){ el.hidden=true; return; } el.hidden=false;
+  el.innerHTML=`<b>${REC.wins}</b> rescued in ${REC.runs} ${REC.runs===1?'attempt':'attempts'}`+(REC.best?` · best rescue <b>${fmtT(REC.best)}</b>`:''); }
+let GFX0=null;
+function applyGfx(){ if(!GFX0) GFX0={post:postOn,refl:REFL.on,shadow:renderer.shadowMap.enabled,fshadow:flash.castShadow};
+  if(SET.gfx==='low'){ lowQ=true; postOn=false; REFL.on=false; renderer.setPixelRatio(Math.min(1,PR)); flash.castShadow=false; renderer.shadowMap.enabled=false; }
+  else { lowQ=false; window.__q1=false; postOn=GFX0.post; REFL.on=GFX0.refl; renderer.setPixelRatio(PR); flash.castShadow=GFX0.fshadow; renderer.shadowMap.enabled=GFX0.shadow; }
+  scene.traverse(o=>{ if(o.material&&o.material.needsUpdate!==undefined) o.material.needsUpdate=true; }); onResize(); }
+function syncSettings(){ $('sVol').value=SET.vol; $('oVol').textContent=SET.vol+'%'; $('sRain').value=SET.rain; $('oRain').textContent=SET.rain+'%';
+  $('sSens').value=SET.sens; $('oSens').textContent=(SET.sens/100).toFixed(1)+'×'; $('sVib').checked=SET.vib;
+  $('sGfx').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.q===SET.gfx)); }
+function openSettings(){ syncSettings(); $('settings').hidden=false; $('setDone').focus(); }
+function closeSettings(){ $('settings').hidden=true; saveJSON('lostcity.settings',SET); }
+$('sVol').addEventListener('input',e=>{ SET.vol=+e.target.value; if(AU.master) AU.master.gain.value=0.95*SET.vol/100; syncSettings(); });
+$('sRain').addEventListener('input',e=>{ SET.rain=+e.target.value; syncSettings(); });
+$('sSens').addEventListener('input',e=>{ SET.sens=+e.target.value; syncSettings(); });
+$('sVib').addEventListener('change',e=>{ SET.vib=e.target.checked; if(SET.vib) buzz(30); });
+$('sGfx').addEventListener('click',e=>{ const q=e.target.dataset&&e.target.dataset.q; if(!q||q===SET.gfx) return; const wasLow=SET.gfx==='low'; SET.gfx=q; if(q==='low'||wasLow) applyGfx(); syncSettings(); });
+$('setDone').addEventListener('click',closeSettings);
+$('settings').addEventListener('click',e=>{ if(e.target.id==='settings') closeSettings(); });
+$('setBtn').addEventListener('click',openSettings); $('pSetBtn').addEventListener('click',openSettings);
+$('pauseBtn').addEventListener('click',()=>setPause(true));
+$('resumeBtn').addEventListener('click',()=>setPause(false));
+$('restartBtn').addEventListener('click',startGame);
+$('quitBtn').addEventListener('click',toMenu); $('endMenuBtn').addEventListener('click',toMenu);
+// pause when the app goes to the background (phone call, home button, screen off)
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ if(canPause()) setPause(true); else if(AU.ctx) AU.ctx.suspend().catch(()=>{}); }
+  else { if(canPause()&&!paused) setPause(true); else if(AU.ctx&&!paused) AU.ctx.resume().catch(()=>{}); } });
+if(SET.gfx==='low') applyGfx();
+showRecords();
+
 buildHalos();
 requestAnimationFrame(frame);
 (function loadAssets(){ let done=false; const fin=ok=>{ if(done) return; done=true; if(ok){ try{ buildRigs(); }catch(e){ console.warn('rig build failed',e); } } $('startBtn').disabled=false; $('loading').textContent=''; };
@@ -2233,7 +2338,7 @@ requestAnimationFrame(frame);
   setTimeout(()=>fin(false),30000); })();
 
 /* test hooks */
-window.LC={RIGS:()=>({RP:!!RP,RC:!!RC,RB:!!RB}),G,P,M,C,CAM,D,LOCS,NODES,EXITS,COL,groundAt,losClear,newGame,startGame,doInteract,findInteract,talkChild,lose,win,
+window.LC={WX,wxSet,WX_STATES,setPause,toMenu,SET,REC,RIGS:()=>({RP:!!RP,RC:!!RC,RB:!!RB}),G,P,M,C,CAM,D,LOCS,NODES,EXITS,COL,groundAt,losClear,newGame,startGame,doInteract,findInteract,talkChild,lose,win,
   tp:(x,z,y)=>{ P.pos.set(x,y===undefined?groundAt(x,z,0):y,z); P.trail=[]; },
   mon:(x,z)=>{ M.pos.set(x,0,z); },
   forceLoc:id=>{ window.__forceLoc=id; },

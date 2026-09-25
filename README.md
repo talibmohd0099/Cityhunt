@@ -17,11 +17,22 @@ python3 -m http.server 8000
 
 Every push to `main` publishes the game to GitHub Pages through `.github/workflows/deploy-pages.yml`. One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**. On a free GitHub plan the repository has to be public for Pages to work.
 
+## Android APK
+
+`.github/workflows/android-apk.yml` wraps the game in a [Capacitor](https://capacitorjs.com) Android app. It downloads three.js into the app, so the game works offline. Every push to `main` builds `LostCity.apk` and publishes it on the **apk-latest** release:
+
+https://github.com/talibmohd0099/Cityhunt/releases/tag/apk-latest
+
+To install it, open that page on your Android phone, tap `LostCity.apk`, and allow installs from your browser when Android asks. Every build is signed with the same debug key (`.github/android/debug.keystore`), so a new APK installs over the old one. The debug key is fine for sideloading. The Play Store needs a private release key instead.
+
+Pull requests build the APK too. You can download it from the run's **Artifacts** section.
+
 ## What's inside
 
 | Path | What it is |
 |---|---|
 | `index.html` | The whole game: rendering, city generation, AI, audio and UI |
+| `assets/player.json` | The player character (a rigged Mixamo model) |
 | `assets/xbot.json` | Animated humanoid rig (glTF with an embedded buffer) used for the player, the child and the monster |
 | `assets/brick.jpg` | Brick detail texture for the facades |
 | `assets/ripples.jpg` | Normal map for rain ripples in the puddle reflections |
@@ -37,6 +48,9 @@ Three.js r128 and its example loaders and post-processing passes are loaded from
 - **Adaptive quality:** slow devices automatically turn off the reflections and bloom.
 - **Sound:** all audio is synthesized with WebAudio.
 - **Fallback:** if the character asset fails to load, the game falls back to procedural characters.
+- **Weather:** the rain comes and goes at random, from clear to drizzle, rain and storm. Heavier rain hides more of your footsteps from the monster, and lightning only strikes in heavy rain.
+- **Pause and settings:** the pause button (or Esc/P) pauses the game, which also happens automatically when the app goes to the background. Settings covers volume, rain volume, look speed, graphics (Auto/Low/High) and vibration, and they are saved on the device.
+- **Records:** your rescues, attempts and best rescue time are saved on the device.
 
 ## License
 

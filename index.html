@@ -1267,15 +1267,17 @@ function rigMaterial(kind,o={}){
   m.customProgramCacheKey=()=>'lc_'+kind+(o.bulk===false?'_nb':'');
   return m;
 }
-function makeRig(kind){
-  const root=THREE.SkeletonUtils.clone(RIG.gltf.scene);
-  const mat=rigMaterial(kind);
+function makeRig(kind,src){
+  const root=THREE.SkeletonUtils.clone(src||RIG.gltf.scene);
+  const mat=src?null:rigMaterial(kind);
   const bones={};
-  root.traverse(o=>{ if(o.isBone) bones[o.name.replace('mixamorig','')]=o; if(o.isMesh){ o.material=mat; o.castShadow=true; o.receiveShadow=true; o.frustumCulled=false; } });
+  root.traverse(o=>{ if(o.isBone) bones[o.name.replace('mixamorig','')]=o; if(o.isMesh){ if(mat) o.material=mat; else [].concat(o.material).forEach(m=>{ m.skinning=true; m.envMapIntensity=0.5; }); o.castShadow=true; o.receiveShadow=true; o.frustumCulled=false; } });
   root.updateMatrixWorld(true);
   const bindQ={}; const rq=root.getWorldQuaternion(new THREE.Quaternion()).invert();
   for(const k in bones) bindQ[k]=rq.clone().multiply(bones[k].getWorldQuaternion(new THREE.Quaternion()));
   const R={kind,root,bones,bindQ,mat,mixer:new THREE.AnimationMixer(root),act:{}};
+  R.order=[]; root.traverse(o=>{ if(o.isBone){ const k=o.name.replace('mixamorig',''); if(R.order.indexOf(k)<0) R.order.push(k); } });
+  if(bones.Hips) R.hip0=root.worldToLocal(bones.Hips.getWorldPosition(new THREE.Vector3()));
   for(const n of ['idle','walk','run','sneak_pose','sad_pose']){ const c=RIG.clips[n]; if(!c) continue; const a=R.mixer.clipAction(c); if(n.endsWith('_pose')) a.blendMode=THREE.AdditiveAnimationBlendMode; a.play(); a.setEffectiveWeight(n==='idle'?1:0); R.act[n]=a; }
   // world-space attach helper (bind pose, character at origin)
   R.attach=(boneName,obj)=>{ root.add(obj); root.updateMatrixWorld(true); bones[boneName].attach(obj); return obj; };
@@ -1361,18 +1363,18 @@ function beastPose(R,o){
 }
 
 /* ---- rigged characters replace the procedural stand-ins once xbot.glb loads ---- */
-let RP=null, RC=null, RB=null;
+let RP=null, RC=null, RB=null, PLAYER_SRC=null;
 function buildRigs(){
-  RP=makeRig('adult');
+  RP=makeRig('adult',PLAYER_SRC); if(PLAYER_SRC){ RP.driver=makeRig('adult'); } const _bw=n=>RP.bones[n].getWorldPosition(new THREE.Vector3());
   const packM=new THREE.MeshStandardMaterial({color:0x121310,roughness:0.9,envMapIntensity:0.2});
   const pack=new THREE.Group(); const pb=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.14,0.38,12),packM); pb.scale.set(1.05,1,0.55); pack.add(pb);
   const pt=new THREE.Mesh(new THREE.CylinderGeometry(0.065,0.065,0.28,12),new THREE.MeshStandardMaterial({color:0x2a2418,roughness:0.95,envMapIntensity:0.2})); pt.rotation.z=Math.PI/2; pt.position.y=0.22; pack.add(pt);
   const pk=new THREE.Mesh(new THREE.BoxGeometry(0.2,0.14,0.06),new THREE.MeshStandardMaterial({color:0x1c1a14,roughness:0.95,envMapIntensity:0.2})); pk.position.set(0,-0.09,-0.09); pack.add(pk);
   for(const sx of [-1,1]){ const st=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.42,0.02),packM); st.position.set(sx*0.1,0.02,0.2); st.rotation.x=0.12; pack.add(st); }
-  pack.position.set(0,1.24,-0.2); RP.attach('Spine2',pack);
+  { const sp=_bw('Spine2'); pack.position.set(0,sp.y-0.1,sp.z-0.19); } RP.attach('Spine2',pack);
   const tg=new THREE.Group(); const tb=new THREE.Mesh(new THREE.CylinderGeometry(0.026,0.034,0.22,10),new THREE.MeshStandardMaterial({color:0x121212,metalness:0.7,roughness:0.35})); tb.rotation.z=Math.PI/2; tg.add(tb);
   const tl=new THREE.Mesh(new THREE.CircleGeometry(0.03,12),lens.material); tl.rotation.y=-Math.PI/2; tl.position.x=-0.111; tg.add(tl);
-  tg.position.set(-0.8,1.42,-0.02); RP.attach('RightHand',tg);
+  { const h=_bw('RightHand'); tg.position.set(h.x-0.09,h.y-0.02,h.z+0.03); } RP.attach('RightHand',tg);
   RP.root.traverse(o=>{ if(o.isMesh) o.castShadow=false; });
   scene.remove(PH.root); PH.root=RP.root; scene.add(RP.root);
   RC=makeRig('child'); RC.bones.Head.scale.setScalar(1.2);
@@ -1382,8 +1384,26 @@ function buildRigs(){
 }
 const _rv=new THREE.Vector3(), _rv2=new THREE.Vector3(), _rqa=new THREE.Quaternion(), _rqb=new THREE.Quaternion(), _YA=new THREE.Vector3(0,1,0), _MX=new THREE.Vector3(-1,0,0);
 function rigAimDir(R,name,dir,w){ const b=R.bones[name]; if(!b||w<=0.001) return; _rqa.copy(b.quaternion); rigAim(R,name,_rqb.setFromUnitVectors(_MX,dir.normalize())); if(w<1) b.quaternion.copy(_rqa.slerp(b.quaternion,w)); }
+/* copy the pose of an animated Xbot driver onto a different Mixamo skeleton (both bind in T-pose) */
+const _tq1=new THREE.Quaternion(), _tq2=new THREE.Quaternion(), _tv1=new V3();
+function rigRetarget(T,Dr){
+  const W={}; T.root.updateMatrixWorld(true); const rq=T.root.getWorldQuaternion(new THREE.Quaternion()), rqi=rq.clone().invert();
+  const dq=Dr.root.getWorldQuaternion(new THREE.Quaternion()).invert();
+  for(const k of T.order){ const b=T.bones[k], s=Dr.bones[k]; if(!s||!Dr.bindQ[k]) continue;
+    const sw=dq.clone().multiply(s.getWorldQuaternion(_tq1));
+    const w=sw.multiply(_tq2.copy(Dr.bindQ[k]).invert()).multiply(T.bindQ[k]); W[k]=w;
+    const pk=b.parent&&b.parent.isBone?b.parent.name.replace('mixamorig',''):null;
+    const pw=pk&&W[pk]?W[pk]:rqi.clone().multiply(b.parent.getWorldQuaternion(_tq1));
+    b.quaternion.copy(pw.clone().invert().multiply(w)); }
+  // hips translation, scaled by leg length
+  const hs=Dr.bones.Hips, ht=T.bones.Hips; const pd=Dr.root.worldToLocal(hs.getWorldPosition(_tv1.set(0,0,0)));
+  const r=T.hip0.y/Dr.hip0.y; const c=new V3(T.hip0.x+(pd.x-Dr.hip0.x)*r, T.hip0.y+(pd.y-Dr.hip0.y)*r, T.hip0.z+(pd.z-Dr.hip0.z)*r);
+  ht.parent.updateMatrixWorld(true); ht.position.copy(ht.parent.worldToLocal(T.root.localToWorld(c)));
+  T.root.updateMatrixWorld(true);
+}
 function animPlayerRig(dt,realSp){
-  rigLoco(RP,dt,realSp,P.crA||0,0,{walkSpeed:1.5,runSpeed:4.6});
+  if(RP.driver){ RP.driver.root.rotation.set(0,0,0); rigLoco(RP.driver,dt,realSp,P.crA||0,0,{walkSpeed:1.5,runSpeed:4.6}); rigRetarget(RP,RP.driver); }
+  else rigLoco(RP,dt,realSp,P.crA||0,0,{walkSpeed:1.5,runSpeed:4.6});
   if(P.flash&&!P.hidden){ const w=clamp(1-P.runAmt*1.1,0,1);
     _rv2.copy(flash.target.position).sub(flash.position).normalize().applyAxisAngle(_YA,-P.yaw);
     rigAimDir(RP,'RightArm',_rv.set(-0.2,-0.75,0.55),w);
@@ -2207,7 +2227,8 @@ requestAnimationFrame(frame);
 (function loadAssets(){ let done=false; const fin=ok=>{ if(done) return; done=true; if(ok){ try{ buildRigs(); }catch(e){ console.warn('rig build failed',e); } } $('startBtn').disabled=false; $('loading').textContent=''; };
   if(!THREE.GLTFLoader||!THREE.SkeletonUtils){ setTimeout(()=>fin(false),50); return; }
   $('loading').textContent='Loading characters…';
-  new THREE.GLTFLoader().load('assets/xbot.json',g=>{ try{ rigPrep(g); fin(true); }catch(e){ console.warn(e); fin(false); } },
+  new THREE.GLTFLoader().load('assets/xbot.json',g=>{ try{ rigPrep(g); }catch(e){ console.warn(e); fin(false); return; }
+    $('loading').textContent='Loading player…'; new THREE.GLTFLoader().load('assets/player.json',pg=>{ PLAYER_SRC=pg.scene; fin(true); },e=>{ if(e&&e.total) $('loading').textContent='Loading player… '+Math.round(e.loaded/e.total*100)+'%'; },()=>fin(true)); },
     e=>{ if(e&&e.total) $('loading').textContent='Loading characters… '+Math.round(e.loaded/e.total*100)+'%'; }, e=>{ console.warn('xbot.glb failed',e); fin(false); });
   setTimeout(()=>fin(false),30000); })();
 

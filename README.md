@@ -50,6 +50,8 @@ Three.js r128 and its example loaders and post-processing passes are loaded from
 - **Fallback:** if the character asset fails to load, the game falls back to procedural characters.
 - **Weather:** the rain comes and goes at random, from clear to drizzle, rain and storm. Heavier rain hides more of your footsteps from the monster, and lightning only strikes in heavy rain.
 - **Pause and settings:** the pause button (or Esc/P) pauses the game, which also happens automatically when the app goes to the background. Settings covers volume, rain volume, look speed, graphics (Auto/Low/High) and vibration, and they are saved on the device.
+- **Vehicles:** besides the parked sedans, SUVs, vans and taxis, the streets have two buses, a fire truck, police cars and an ambulance with flashing light bars, two crash scenes, and abandoned cars with their doors left open. You can hide beside the buses, the fire truck and the ambulance.
+- **Car alarms:** some parked cars have a blinking red light on the dashboard. Run or sprint into one and its alarm goes off. The monster comes to investigate the noise, which you can use to lure it away.
 - **Records:** your rescues, attempts and best rescue time are saved on the device.
 
 ## License

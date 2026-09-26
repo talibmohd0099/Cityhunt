@@ -73,4 +73,5 @@ All rights reserved. See [LICENSE](LICENSE). Third-party parts keep their own li
 
 - The Xbot rig and the brick/water textures come from the [three.js examples](https://github.com/mrdoob/three.js/tree/dev/examples) (MIT).
 - The Mercedes-Benz GLS 580 and Koenigsegg Agera models were supplied by the project owner (source files `uploads_files_2787791` and `uploads_files_2792345`), converted and simplified for the game. Car brand names and designs belong to their owners.
+- The Godot version's player character and his motion-captured animations come from [Microsoft Rocketbox](https://github.com/microsoft/microsoft-rocketbox) (MIT, see `godot/assets/player/LICENSE-rocketbox.txt`).
 - Fonts: Big Shoulders Display and Barlow (Google Fonts, OFL).

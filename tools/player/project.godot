@@ -1,0 +1,6 @@
+; Tool project for bake.gd (bakes the player character into godot/assets/player/)
+config_version=5
+
+[application]
+
+config/name="player-bake"

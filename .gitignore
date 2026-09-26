@@ -1,2 +1,5 @@
 .DS_Store
 node_modules/
+
+# Godot cache of the player bake tool
+tools/player/.godot/

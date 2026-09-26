@@ -164,6 +164,7 @@ func _on_resize() -> void:
 	var s := get_viewport().get_visible_rect().size
 	var portrait := s.x < s.y
 	cam.fov = 72.0 if portrait else 62.0
+	pl.fov_base = cam.fov
 	pl.cam_dist = 4.4 if portrait else 3.3
 
 # ---------------------------------------------------------------- helpers

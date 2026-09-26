@@ -84,6 +84,10 @@ jobs:
           done
           exit $fail
 
+      - name: Test the player's movement (speed build-up, stops, turns, planted feet)
+        working-directory: godot
+        run: ~/godot/godot --headless --path . --fixed-fps 30 -s res://tests/man_test.gd
+
       - name: Play full games automatically
         working-directory: godot
         run: |

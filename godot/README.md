@@ -25,6 +25,10 @@ and High fix it (render resolution, reflections, glow, flashlight shadow, how fa
 
 - `scripts/game.gd`: the game rules, clues, escape, director and end screens
 - `scripts/player.gd`, `monster.gd`, `child.gd`: the three characters
+- `scripts/man.gd`: the player's body: motion-captured walk, jog, run, sprint, starts, stops, turns
+  and crouching, blended by speed, with gradual speed-up and slow-down and feet held on the ground
+- `assets/player/`: the player character and his clips (Microsoft Rocketbox, MIT), made by
+  `tools/player` (see its README)
 - `scripts/hud.gd`: HUD, touch controls, start / pause / end / settings screens
 - `scripts/world.gd`, `col.gd`: the city, lights, rain and collision
 - `assets/baked/`: city, characters and textures exported from the browser version by `tools/bake`
@@ -34,6 +38,8 @@ and High fix it (render resolution, reflections, glow, flashlight shadow, how fa
   `tools/vehicles/make_far_lod.py`
 - `shaders/`: wet streets, building walls, car paint, light halos and police light bars
 - `tests/autoplay.gd`: plays whole games by itself and checks each step (runs on every build)
+- `tests/man_test.gd`: walks, runs, stops, turns and crouches the player and checks the speed builds
+  up and dies down over time, turns take a curve and feet on the ground don't slide (runs on every build)
 
 ## Run the automatic test
 
@@ -43,3 +49,9 @@ godot --headless --path godot --fixed-fps 20 -s res://tests/autoplay.gd -- --mod
 
 `--mode=win` must end in a rescue, `--mode=lose` must end with being caught, `--mode=wild` lets the
 creature hunt freely. It prints `ok` or `FAIL` for each check and exits with an error if anything failed.
+
+The player's movement on its own:
+
+```
+godot --headless --path godot --fixed-fps 30 -s res://tests/man_test.gd
+```
